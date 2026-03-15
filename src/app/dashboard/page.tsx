@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, limit } from "firebase/firestore";
 import { 
   ShoppingBag, 
   Package, 
@@ -38,13 +38,14 @@ export default function UserDashboard() {
   const [trxId, setTrxId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtered queries to match Firestore Security Rules
+  // Filtered queries to match Firestore Security Rules precisely
   const ordersQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
     return query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
+      limit(20)
     );
   }, [user, db]);
 
@@ -58,7 +59,8 @@ export default function UserDashboard() {
     return query(
       collection(db, "wallet_requests"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
+      limit(20)
     );
   }, [user, db]);
 
@@ -74,7 +76,7 @@ export default function UserDashboard() {
       await addDoc(collection(db, "wallet_requests"), {
         userId: user.uid,
         amount: Number(addAmount),
-        trxId: trxId.toUpperCase(),
+        trxId: trxId.toUpperCase().trim(),
         paymentMethod: "bKash/Nagad",
         status: "pending",
         createdAt: serverTimestamp()
@@ -83,7 +85,7 @@ export default function UserDashboard() {
       setAddAmount("");
       setTrxId("");
     } catch (error) {
-      toast({ variant: "destructive", title: "Failed", description: "Could not send request." });
+      // Error is handled by global listener
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +132,7 @@ export default function UserDashboard() {
                 <WalletIcon className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Balance</p>
+                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Wallet Balance</p>
                 <p className="text-2xl font-black text-primary">৳{walletData?.balance || 0}</p>
               </div>
             </div>
@@ -171,14 +173,14 @@ export default function UserDashboard() {
                         </div>
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
                           <div>
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Date</p>
+                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Order Date</p>
                             <p className="text-sm font-medium flex items-center gap-1.5">
                               <Calendar className="w-3.5 h-3.5" /> 
                               {order.createdAt ? format(order.createdAt.toDate(), "PPpp") : "..."}
                             </p>
                           </div>
                           <div>
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Price</p>
+                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Amount Paid</p>
                             <p className="text-xl font-bold text-primary">৳{order.packagePrice}</p>
                           </div>
                           <div>
@@ -189,7 +191,7 @@ export default function UserDashboard() {
                       </div>
                       <Button variant="outline" className="rounded-xl gap-2 border-primary/20" asChild>
                         <Link 
-                          href={`https://wa.me/${adminData?.contact.phones[0]?.replace(/\D/g, '')}?text=Help with Order: ${order.packageName}`}
+                          href={`https://wa.me/${adminData?.contact.phones[0]?.replace(/\D/g, '')}?text=Support for Order: ${order.packageName}`}
                           target="_blank"
                         >
                           <MessageCircle className="w-4 h-4 text-[#25D366]" /> Support
@@ -211,13 +213,13 @@ export default function UserDashboard() {
               <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white">
                 <CardHeader className="px-0 pt-0">
                   <CardTitle className="flex items-center gap-2">
-                    <PlusCircle className="w-6 h-6 text-primary" /> Add Funds
+                    <PlusCircle className="w-6 h-6 text-primary" /> Request Add Funds
                   </CardTitle>
-                  <CardDescription>Send money to our bKash/Nagad and provide TrxID below.</CardDescription>
+                  <CardDescription>Send money and provide Transaction ID below.</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleAddMoney} className="space-y-6 pt-4">
                   <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-sm space-y-2">
-                    <p className="font-bold text-primary">Merchant Numbers (Send Money):</p>
+                    <p className="font-bold text-primary uppercase tracking-tighter">Payment Methods (Send Money):</p>
                     <p>bKash: <span className="font-mono font-bold">01837679963</span></p>
                     <p>Nagad: <span className="font-mono font-bold">01837679963</span></p>
                   </div>
@@ -230,14 +232,14 @@ export default function UserDashboard() {
                     <Input id="trxId" value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="Enter code" required className="rounded-xl h-12 font-mono uppercase" />
                   </div>
                   <Button type="submit" disabled={isSubmitting} className="w-full h-12 rounded-xl font-bold shadow-lg">
-                    {isSubmitting ? "Sending..." : "Request Update"}
+                    {isSubmitting ? "Submitting..." : "Submit Request"}
                   </Button>
                 </form>
               </Card>
 
-              <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white">
+              <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white overflow-hidden">
                 <CardHeader className="px-0 pt-0">
-                  <CardTitle>Recent Requests</CardTitle>
+                  <CardTitle>Recent Wallet Requests</CardTitle>
                 </CardHeader>
                 <div className="space-y-4 pt-4">
                   {isWalletLoading ? (
@@ -258,7 +260,7 @@ export default function UserDashboard() {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-10 opacity-40">No requests yet.</div>
+                    <div className="text-center py-10 opacity-40">No wallet requests yet.</div>
                   )}
                 </div>
               </Card>
@@ -273,13 +275,13 @@ export default function UserDashboard() {
                 <p className="text-muted-foreground mt-2">{user.email}</p>
                 <div className="grid grid-cols-2 gap-4 mt-10">
                   <div className="p-6 rounded-3xl bg-muted/30 border border-border/40 text-center">
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Status</p>
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Account Status</p>
                     <p className="font-bold flex items-center justify-center gap-2 text-green-600">
                       <ShieldCheck className="w-4 h-4" /> Verified
                     </p>
                   </div>
                   <div className="p-6 rounded-3xl bg-muted/30 border border-border/40 text-center">
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Joined</p>
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Member Since</p>
                     <p className="font-bold">{user.metadata.creationTime ? format(new Date(user.metadata.creationTime), "MMM yyyy") : 'N/A'}</p>
                   </div>
                 </div>

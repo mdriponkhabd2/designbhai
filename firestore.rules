@@ -23,9 +23,9 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow create: if true;
-      // Explicitly handle list and get for users and admin
-      allow read: if isAdmin() || (isSignedIn() && (resource == null || resource.data.userId == request.auth.uid));
+      allow create: if isSignedIn();
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow get: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();
     }
 
@@ -35,9 +35,9 @@ service cloud.firestore {
     }
 
     match /wallet_requests/{requestId} {
-      allow create: if isSignedIn();
-      // Explicitly handle list and get for users and admin
-      allow read: if isAdmin() || (isSignedIn() && (resource == null || resource.data.userId == request.auth.uid));
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow get: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();
     }
 
