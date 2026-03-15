@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { collection, query, where, orderBy, limit, doc, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from "firebase/firestore";
 import { 
   ShoppingBag, 
   Package, 
@@ -38,7 +38,7 @@ export default function UserDashboard() {
   const [trxId, setTrxId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Optimized query strictly matching security rules
+  // Filtered queries to match Firestore Security Rules
   const ordersQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
     return query(
@@ -189,7 +189,7 @@ export default function UserDashboard() {
                       </div>
                       <Button variant="outline" className="rounded-xl gap-2 border-primary/20" asChild>
                         <Link 
-                          href={`https://wa.me/${adminData.contact.phones[0]?.replace(/\D/g, '')}?text=Help with Order: ${order.packageName}`}
+                          href={`https://wa.me/${adminData?.contact.phones[0]?.replace(/\D/g, '')}?text=Help with Order: ${order.packageName}`}
                           target="_blank"
                         >
                           <MessageCircle className="w-4 h-4 text-[#25D366]" /> Support
