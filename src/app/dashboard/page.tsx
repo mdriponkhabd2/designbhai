@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { collection, query, where, orderBy, limit, doc, addDoc, serverTimestamp } from "firebase/firestore";
 import { 
   ShoppingBag, 
-  Clock, 
   Package, 
   MessageCircle, 
   User as UserIcon, 
@@ -45,8 +44,7 @@ export default function UserDashboard() {
     return query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(20)
+      orderBy("createdAt", "desc")
     );
   }, [user, db]);
 
@@ -60,13 +58,12 @@ export default function UserDashboard() {
     return query(
       collection(db, "wallet_requests"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(10)
+      orderBy("createdAt", "desc")
     );
   }, [user, db]);
 
   const { data: orders, isLoading: isOrdersLoading } = useCollection(ordersQuery);
-  const { data: walletData, isLoading: isWalletLoading } = useDoc(walletRef);
+  const { data: walletData } = useDoc(walletRef);
   const { data: walletRequests } = useCollection(walletRequestsQuery);
 
   const handleAddMoney = async (e: React.FormEvent) => {
@@ -101,21 +98,11 @@ export default function UserDashboard() {
     }
   };
 
-  if (isUserLoading) return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/20">
-      <div className="text-center space-y-4">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="font-medium text-muted-foreground">Loading Profile...</p>
-      </div>
-    </div>
-  );
+  if (isUserLoading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
 
   if (!user) return (
     <div className="min-h-screen flex flex-col items-center justify-center space-y-6 bg-muted/30">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">Session Expired</h1>
-        <p className="text-muted-foreground">Please login to access your account.</p>
-      </div>
+      <h1 className="text-2xl font-bold">Please login to access your account.</h1>
       <Button asChild className="rounded-xl px-10"><Link href="/login">Login Now</Link></Button>
     </div>
   );
@@ -164,51 +151,50 @@ export default function UserDashboard() {
 
             <TabsContent value="orders" className="space-y-6">
               {isOrdersLoading ? (
-                <Skeleton className="h-64 w-full rounded-[2rem]" />
+                <div className="space-y-4">
+                  <Skeleton className="h-32 w-full rounded-2xl" />
+                  <Skeleton className="h-32 w-full rounded-2xl" />
+                </div>
               ) : orders && orders.length > 0 ? (
                 orders.map((order) => (
                   <Card key={order.id} className="border-none shadow-sm rounded-[2rem] overflow-hidden bg-white hover:shadow-md transition-shadow">
-                    <CardContent className="p-0">
-                      <div className="flex flex-col md:flex-row">
-                        <div className="p-8 flex-1 space-y-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                                <Package className="w-5 h-5" />
-                              </div>
-                              <span className="font-bold text-xl">{order.packageName}</span>
+                    <CardContent className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                      <div className="flex-1 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                              <Package className="w-5 h-5" />
                             </div>
-                            {getStatusBadge(order.status)}
+                            <span className="font-bold text-xl">{order.packageName}</span>
                           </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-                            <div className="space-y-1">
-                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Date</p>
-                              <p className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
-                                <Calendar className="w-3.5 h-3.5" /> 
-                                {order.createdAt ? format(order.createdAt.toDate(), "PPpp") : "Processing..."}
-                              </p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Paid</p>
-                              <p className="text-xl font-bold text-primary">৳{order.packagePrice}</p>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">TrxID</p>
-                              <p className="text-sm font-mono font-bold select-all bg-muted/50 px-2 py-0.5 rounded inline-block">{order.trxId}</p>
-                            </div>
-                          </div>
+                          {getStatusBadge(order.status)}
                         </div>
-                        <div className="bg-primary/5 p-8 md:w-64 flex flex-col items-center justify-center border-l border-border/10">
-                          <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl h-11 border-primary/20" asChild>
-                            <Link 
-                              href={`https://wa.me/${adminData.contact.phones[0]?.replace(/\D/g, '')}?text=Hello, I need help with my order: ${order.packageName}. TrxID: ${order.trxId}`}
-                              target="_blank"
-                            >
-                              <MessageCircle className="w-4 h-4 text-[#25D366]" /> Help Support
-                            </Link>
-                          </Button>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+                          <div>
+                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Date</p>
+                            <p className="text-sm font-medium flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5" /> 
+                              {order.createdAt ? format(order.createdAt.toDate(), "PPpp") : "..."}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Price</p>
+                            <p className="text-xl font-bold text-primary">৳{order.packagePrice}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">TrxID</p>
+                            <p className="text-sm font-mono font-bold select-all bg-muted/50 px-2 py-0.5 rounded">{order.trxId}</p>
+                          </div>
                         </div>
                       </div>
+                      <Button variant="outline" className="rounded-xl gap-2 border-primary/20" asChild>
+                        <Link 
+                          href={`https://wa.me/${adminData.contact.phones[0]?.replace(/\D/g, '')}?text=Help with Order: ${order.packageName}`}
+                          target="_blank"
+                        >
+                          <MessageCircle className="w-4 h-4 text-[#25D366]" /> Support
+                        </Link>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))
@@ -216,7 +202,7 @@ export default function UserDashboard() {
                 <div className="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-border/50">
                   <ShoppingBag className="w-16 h-16 text-muted-foreground/10 mx-auto mb-4" />
                   <h3 className="text-xl font-bold">No orders found</h3>
-                  <Button className="mt-6 rounded-xl" asChild><Link href="/services">Browse Services</Link></Button>
+                  <Button className="mt-6 rounded-xl" asChild><Link href="/services">Order Now</Link></Button>
                 </div>
               )}
             </TabsContent>
@@ -231,9 +217,9 @@ export default function UserDashboard() {
                 </CardHeader>
                 <form onSubmit={handleAddMoney} className="space-y-6 pt-4">
                   <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-sm space-y-2">
-                    <p className="font-bold text-primary">Merchant Numbers:</p>
-                    <p>bKash: <span className="font-mono font-bold">01837679963</span> (Send Money)</p>
-                    <p>Nagad: <span className="font-mono font-bold">01837679963</span> (Send Money)</p>
+                    <p className="font-bold text-primary">Merchant Numbers (Send Money):</p>
+                    <p>bKash: <span className="font-mono font-bold">01837679963</span></p>
+                    <p>Nagad: <span className="font-mono font-bold">01837679963</span></p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="amount">Amount (৳)</Label>
@@ -243,15 +229,15 @@ export default function UserDashboard() {
                     <Label htmlFor="trxId">Transaction ID (TrxID)</Label>
                     <Input id="trxId" value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="Enter code" required className="rounded-xl h-12 font-mono" />
                   </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-12 rounded-xl gap-2 font-bold shadow-lg shadow-primary/20">
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-12 rounded-xl font-bold shadow-lg">
                     {isSubmitting ? "Sending..." : "Request Update"}
                   </Button>
                 </form>
               </Card>
 
-              <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white overflow-hidden">
+              <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white">
                 <CardHeader className="px-0 pt-0">
-                  <CardTitle>Request History</CardTitle>
+                  <CardTitle>Recent Requests</CardTitle>
                 </CardHeader>
                 <div className="space-y-4 pt-4">
                   {walletRequests?.map((req) => (
@@ -260,17 +246,12 @@ export default function UserDashboard() {
                         <p className="font-bold">৳{req.amount}</p>
                         <p className="text-[10px] text-muted-foreground font-mono">{req.trxId}</p>
                       </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className={req.status === 'approved' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}>
-                          {req.status.toUpperCase()}
-                        </Badge>
-                        <p className="text-[10px] text-muted-foreground mt-1">{req.createdAt ? format(req.createdAt.toDate(), "PP") : "Just now"}</p>
-                      </div>
+                      <Badge variant="outline" className={req.status === 'approved' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}>
+                        {req.status.toUpperCase()}
+                      </Badge>
                     </div>
                   ))}
-                  {walletRequests?.length === 0 && (
-                    <div className="text-center py-10 opacity-40">No recent requests.</div>
-                  )}
+                  {walletRequests?.length === 0 && <div className="text-center py-10 opacity-40">No requests yet.</div>}
                 </div>
               </Card>
             </TabsContent>
@@ -283,21 +264,16 @@ export default function UserDashboard() {
                 <h2 className="text-2xl font-bold">{user.displayName || 'Customer Account'}</h2>
                 <p className="text-muted-foreground mt-2">{user.email}</p>
                 <div className="grid grid-cols-2 gap-4 mt-10">
-                  <div className="p-6 rounded-3xl bg-muted/30 border border-border/40">
+                  <div className="p-6 rounded-3xl bg-muted/30 border border-border/40 text-center">
                     <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Status</p>
                     <p className="font-bold flex items-center justify-center gap-2 text-green-600">
                       <ShieldCheck className="w-4 h-4" /> Verified
                     </p>
                   </div>
-                  <div className="p-6 rounded-3xl bg-muted/30 border border-border/40">
+                  <div className="p-6 rounded-3xl bg-muted/30 border border-border/40 text-center">
                     <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Joined</p>
                     <p className="font-bold">{user.metadata.creationTime ? format(new Date(user.metadata.creationTime), "MMM yyyy") : 'N/A'}</p>
                   </div>
-                </div>
-                <div className="mt-8 pt-8 border-t border-border/40 flex flex-col gap-4">
-                  <Button variant="outline" className="rounded-xl h-12" asChild>
-                    <Link href="/contact">Need help? Contact Admin</Link>
-                  </Button>
                 </div>
               </Card>
             </TabsContent>
