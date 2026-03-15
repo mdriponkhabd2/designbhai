@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useFirestore, useUser } from "@/firebase";
+import { useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { PricingPackage, HostingPackage } from "@/lib/admin-store";
 import { ShieldCheck, CreditCard } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -22,8 +21,6 @@ interface CheckoutModalProps {
 
 export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
   const db = useFirestore();
-  const { user } = useUser();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"bKash" | "Nagad">("bKash");
 
@@ -44,17 +41,16 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
       trxId: formData.get("trxId"),
       status: "pending",
       createdAt: serverTimestamp(),
-      userId: user?.uid || null // Link to logged in user for tracking
+      userId: "guest" // No login required anymore
     };
 
     try {
       await addDoc(collection(db, "orders"), payload);
       toast({
         title: "Order Placed Successfully!",
-        description: user ? "Track your order in the dashboard." : "We will verify your transaction shortly.",
+        description: "We will verify your transaction shortly.",
       });
       onClose();
-      if (user) router.push("/dashboard");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -79,11 +75,6 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          {!user && (
-            <div className="bg-primary/10 p-3 rounded-xl text-xs text-primary font-medium text-center border border-primary/20">
-              Tip: <Link href="/login" className="underline font-bold">Login</Link> to track your order progress.
-            </div>
-          )}
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>
@@ -139,4 +130,3 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
     </Dialog>
   );
 }
-import Link from "next/link";

@@ -8,6 +8,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
+      // Simplified admin check to avoid recursive dependency errors
       return isSignedIn() && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
@@ -23,22 +24,18 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow create: if isSignedIn();
-      // Use 'read' which covers both 'get' and 'list'
-      // Ensure the query includes a filter for 'userId' matching the auth UID
-      allow read: if isSignedIn() && (isAdmin() || (resource != null && resource.data.userId == request.auth.uid));
-      allow update, delete: if isAdmin();
+      allow create: if true; // Allow anyone to place an order
+      allow read, update, delete: if isAdmin();
     }
 
     match /wallets/{uid} {
-      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow get: if isAdmin();
       allow write: if isAdmin();
     }
 
     match /wallet_requests/{requestId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read: if isSignedIn() && (isAdmin() || (resource != null && resource.data.userId == request.auth.uid));
-      allow update, delete: if isAdmin();
+      allow create: if true; // Allow guests to request (if ever needed)
+      allow read, update, delete: if isAdmin();
     }
 
     match /contactMessages/{messageId} {
