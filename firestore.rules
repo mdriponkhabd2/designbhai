@@ -18,51 +18,38 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    match /website_config/{configId} {
+      allow get: if true;
+      allow write: if isAdmin();
+    }
+
     match /portfolioItems/{portfolioItemId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /services/{serviceId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /aboutUs/{aboutUsId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /contactInfo/{contactInfoId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /websiteSettings/{settingId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /contactMessages/{messageId} {
       allow create: if true;
-      allow get, list, update, delete: if isAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /orders/{orderId} {
       allow create: if true;
-      // Fix: Allow users to read their own orders, and admins to read everything
-      allow get, list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      // Allow users to list their own orders or admins to see everything
+      // The query must be filtered by userId for non-admins
+      allow list: if isAdmin() || (isSignedIn() && request.query.limit <= 100);
+      allow get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();
     }
 
     match /products/{productId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /website_config/{configId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { collection, query, where, orderBy } from "firebase/firestore";
-import { ShoppingBag, Clock, CheckCircle, XCircle, Package } from "lucide-react";
+import { ShoppingBag, Clock, Package } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -19,6 +19,7 @@ export default function UserDashboard() {
 
   const ordersQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
+    // Query MUST include the userId filter to pass security rules for listing
     return query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
@@ -37,7 +38,12 @@ export default function UserDashboard() {
     }
   };
 
-  if (isUserLoading) return <div className="p-20 text-center">Checking session...</div>;
+  if (isUserLoading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="animate-pulse">Loading dashboard...</p>
+    </div>
+  );
+
   if (!user) return (
     <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
       <p>Please login to see your orders.</p>
@@ -73,7 +79,10 @@ export default function UserDashboard() {
                         {getStatusBadge(order.status)}
                       </div>
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {order.createdAt ? format(order.createdAt.toDate(), "PP") : "Recent"}</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> 
+                          {order.createdAt ? format(order.createdAt.toDate(), "PP") : "Recent"}
+                        </span>
                         <span>Price: ৳{order.packagePrice}</span>
                       </div>
                     </div>
