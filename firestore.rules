@@ -50,7 +50,19 @@ service cloud.firestore {
 
     match /orders/{orderId} {
       allow create: if true;
-      allow get, list, update, delete: if isAdmin();
+      // Fix: Allow users to read their own orders, and admins to read everything
+      allow get, list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /website_config/{configId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
     }
   }
 }
