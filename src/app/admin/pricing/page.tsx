@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Save, Check, Plus, Trash2, CreditCard, Server } from "lucide-react";
+import { Save, Plus, Trash2, CreditCard, Server } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function PricingAdminPage() {
@@ -98,7 +97,7 @@ export default function PricingAdminPage() {
         <section className="space-y-6">
           <div className="flex items-center gap-2 border-b pb-2">
             <CreditCard className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-bold text-primary">Design Packages (Green Section)</h2>
+            <h2 className="text-xl font-bold text-primary">Design Packages</h2>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -130,11 +129,11 @@ export default function PricingAdminPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Order Link</Label>
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Order Link (Action Link)</Label>
                     <Input 
                       value={pkg.orderLink} 
                       onChange={e => handlePackageChange(pkg.id, 'orderLink', e.target.value)}
-                      placeholder="URL"
+                      placeholder="https://..."
                     />
                   </div>
                   
@@ -165,13 +164,13 @@ export default function PricingAdminPage() {
         {/* Hosting Packages */}
         <section className="space-y-6">
           <div className="flex items-center gap-2 border-b pb-2">
-            <Server className="w-5 h-5 text-blue-500" />
-            <h2 className="text-xl font-bold text-blue-500">Domain Hosting Packages (Blue Section)</h2>
+            <Server className="w-5 h-5 text-green-600" />
+            <h2 className="text-xl font-bold text-green-600">Hosting Packages (Domain + Hosting)</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {hostingPackages.map((pkg) => (
-              <Card key={pkg.id} className={`border-border/60 ${pkg.isPopular ? 'ring-2 ring-blue-500 shadow-md' : ''}`}>
+              <Card key={pkg.id} className={`border-border/60 ${pkg.isPopular ? 'ring-2 ring-primary shadow-md' : ''}`}>
                 <CardHeader>
                   <CardTitle className="text-lg">
                     <Input 
@@ -190,7 +189,7 @@ export default function PricingAdminPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Price (৳ /mo)</Label>
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Price (৳ / month)</Label>
                     <Input 
                       value={pkg.price} 
                       onChange={e => handleHostingChange(pkg.id, 'price', e.target.value)}
@@ -198,11 +197,11 @@ export default function PricingAdminPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Order Link</Label>
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">Order Link (Order Now Button)</Label>
                     <Input 
                       value={pkg.orderLink} 
                       onChange={e => handleHostingChange(pkg.id, 'orderLink', e.target.value)}
-                      placeholder="URL"
+                      placeholder="https://..."
                     />
                   </div>
                   
