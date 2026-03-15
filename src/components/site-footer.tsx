@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Instagram, Facebook, Twitter, Linkedin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useAdminData } from "@/lib/admin-store";
 
 export function SiteFooter() {
@@ -22,6 +22,10 @@ export function SiteFooter() {
           <p className="text-slate-400 text-sm leading-relaxed">
             Premium graphics design studio specializing in logo design, branding, and digital assets.
           </p>
+          <div className="text-xs text-slate-500">
+            <p>{data.contact.address}</p>
+            <p className="mt-1">{data.contact.email}</p>
+          </div>
         </div>
         <div className="space-y-6">
           <h4 className="text-lg font-bold">Quick Links</h4>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -23,6 +24,7 @@ export interface AboutData {
 export interface ContactData {
   address: string;
   phones: string[];
+  email: string;
 }
 
 export interface WebsiteSettings {
@@ -31,7 +33,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v2';
+const STORAGE_KEY = 'designbhai_admin_data_v3';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -54,7 +56,8 @@ const DEFAULT_DATA = {
   },
   contact: {
     address: 'Sadaynagaor, Austagram, Kishoregonj',
-    phones: ['01837679963', '01977679962']
+    phones: ['01837679963', '01977679962'],
+    email: 'mdriponkha2@gmail.com'
   },
   settings: {
     title: 'DesignBhai | Creative Studio',
@@ -72,10 +75,13 @@ export function useAdminData() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        // Ensure new fields exist even in old stored data
         setData({
           ...DEFAULT_DATA,
           ...parsed,
+          contact: {
+            ...DEFAULT_DATA.contact,
+            ...(parsed.contact || {})
+          },
           settings: {
             ...DEFAULT_DATA.settings,
             ...(parsed.settings || {})

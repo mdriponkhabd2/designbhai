@@ -5,6 +5,8 @@ import { useAdminData } from "@/lib/admin-store";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   ArrowRight, 
   MessageCircle, 
@@ -12,10 +14,6 @@ import {
   MapPin, 
   Phone, 
   Mail, 
-  Instagram, 
-  Facebook, 
-  Twitter, 
-  Linkedin,
   Palette,
   Layout,
   Layers,
@@ -27,23 +25,52 @@ import Image from "next/image";
 import { useState } from "react";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
+import { useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { toast } from "@/hooks/use-toast";
 
 export default function LandingPage() {
   const { data, isLoaded } = useAdminData();
-  const [activeCategory, setActiveCategory] = useState("All");
+  const db = useFirestore();
+  const [formLoading, setFormLoading] = useState(false);
 
   if (!isLoaded) return null;
 
-  const categories = ["All", "Logo Design", "Social Media", "Branding", "UI/UX"];
-  
-  const filteredPortfolio = activeCategory === "All" 
-    ? data.portfolio 
-    : data.portfolio.filter(item => item.category === activeCategory);
-
   const serviceIcons = [Palette, Layout, Layers, Monitor];
+
+  async function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const payload = {
+      fullName: formData.get('fullName'),
+      emailAddress: formData.get('email'),
+      message: formData.get('message'),
+      receivedAt: serverTimestamp(),
+      isRead: false
+    };
+
+    try {
+      await addDoc(collection(db, 'contactMessages'), payload);
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We will get back to you soon.",
+      });
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
+      <div className="absolute inset-0 bg-grid-slate-100/[0.03] bg-[bottom_left] -z-10" />
       <SiteNavbar />
 
       {/* Hero Section */}
@@ -94,48 +121,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Portfolio Preview Section */}
-      <section className="py-24 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl font-headline font-bold">Our Showcase</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Explore our latest creative endeavors and design projects.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {data.portfolio.slice(0, 6).map((item, idx) => (
-              <Card key={item.id} className="group border-none overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  {item.imageUrl ? (
-                    <Image 
-                      src={item.imageUrl} 
-                      alt={item.title} 
-                      fill 
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      unoptimized={item.imageUrl.startsWith('https://scontent')}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <ImageIcon className="w-8 h-8 text-muted-foreground/20" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
-                    <span className="text-primary font-bold uppercase tracking-widest text-[10px] mb-2">{item.category}</span>
-                    <h3 className="text-white text-xl font-bold">{item.title}</h3>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button size="lg" variant="outline" className="rounded-full px-12" asChild>
-              <Link href="/portfolio">View All Works</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Services Section */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
@@ -159,6 +144,102 @@ export default function LandingPage() {
                 </Card>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+            {data.about.imageUrl ? (
+              <Image 
+                src={data.about.imageUrl} 
+                alt="About DesignBhai" 
+                fill 
+                className="object-cover"
+                unoptimized={data.about.imageUrl.startsWith('https://scontent')}
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <ImageIcon className="w-12 h-12 text-muted-foreground/20" />
+              </div>
+            )}
+          </div>
+          <div className="space-y-8">
+            <Badge variant="secondary" className="px-4 py-1 text-primary">Our Story</Badge>
+            <h2 className="text-4xl font-headline font-bold">Bringing Creativity to Life</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed italic">
+              "{data.about.text}"
+            </p>
+            <Button size="lg" className="rounded-full gap-2" asChild>
+              <Link href="/about">Learn More About Us <ArrowRight className="w-4 h-4" /></Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="space-y-12">
+              <div className="space-y-4">
+                <Badge variant="outline" className="px-4 py-1 text-primary border-primary/20">Contact Us</Badge>
+                <h2 className="text-4xl font-headline font-bold">Let's Work Together</h2>
+                <p className="text-muted-foreground">Have a vision? We have the tools. Send us a message and let's create something amazing.</p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex gap-4 p-5 rounded-2xl bg-muted/50 border border-border/50">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold">Location</h4>
+                    <p className="text-sm text-muted-foreground">{data.contact.address}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 p-5 rounded-2xl bg-muted/50 border border-border/50">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold">Phone</h4>
+                    <p className="text-sm text-muted-foreground">{data.contact.phones[0]}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 p-5 rounded-2xl bg-muted/50 border border-border/50">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                    <Mail className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold">Email</h4>
+                    <p className="text-sm text-muted-foreground">{data.contact.email}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Card className="p-8 rounded-3xl border-border/50 shadow-xl">
+              <form onSubmit={handleContactSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Full Name</label>
+                  <Input name="fullName" placeholder="Enter your name" className="rounded-xl h-12" required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Email Address</label>
+                  <Input name="email" type="email" placeholder="email@example.com" className="rounded-xl h-12" required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Message</label>
+                  <Textarea name="message" placeholder="How can we help?" className="rounded-xl" rows={6} required />
+                </div>
+                <Button type="submit" disabled={formLoading} className="w-full h-12 rounded-xl gap-2 font-bold shadow-lg shadow-primary/20">
+                  {formLoading ? "Sending..." : "Send Message"} <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </Card>
           </div>
         </div>
       </section>

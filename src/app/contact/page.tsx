@@ -11,11 +11,47 @@ import { MapPin, Phone, Mail, Send, MessageCircle, Instagram, Facebook, Twitter,
 import Link from "next/link";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
+import { useState } from "react";
+import { useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { toast } from "@/hooks/use-toast";
 
 export default function ContactPublicPage() {
   const { data, isLoaded } = useAdminData();
+  const db = useFirestore();
+  const [formLoading, setFormLoading] = useState(false);
 
   if (!isLoaded) return null;
+
+  async function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const payload = {
+      fullName: formData.get('fullName'),
+      emailAddress: formData.get('email'),
+      message: formData.get('message'),
+      receivedAt: serverTimestamp(),
+      isRead: false
+    };
+
+    try {
+      await addDoc(collection(db, 'contactMessages'), payload);
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We will get back to you soon.",
+      });
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,7 +94,7 @@ export default function ContactPublicPage() {
                   </div>
                   <div>
                     <h4 className="font-bold">Email Us</h4>
-                    <p className="text-sm text-muted-foreground">hello@designbhai.com</p>
+                    <p className="text-sm text-muted-foreground">{data.contact.email}</p>
                   </div>
                 </div>
               </div>
@@ -73,21 +109,21 @@ export default function ContactPublicPage() {
             </div>
 
             <Card className="p-8 rounded-3xl border-border/50 shadow-2xl">
-              <form className="space-y-6">
+              <form onSubmit={handleContactSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold">Full Name</label>
-                  <Input placeholder="Enter your name" className="rounded-xl h-12" />
+                  <Input name="fullName" placeholder="Enter your name" className="rounded-xl h-12" required />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold">Email Address</label>
-                  <Input type="email" placeholder="email@example.com" className="rounded-xl h-12" />
+                  <Input name="email" type="email" placeholder="email@example.com" className="rounded-xl h-12" required />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold">Message</label>
-                  <Textarea placeholder="How can we help?" className="rounded-xl" rows={6} />
+                  <Textarea name="message" placeholder="How can we help?" className="rounded-xl" rows={6} required />
                 </div>
-                <Button className="w-full h-12 rounded-xl gap-2 font-bold shadow-lg shadow-primary/20">
-                  Send Message <Send className="w-4 h-4" />
+                <Button type="submit" disabled={formLoading} className="w-full h-12 rounded-xl gap-2 font-bold shadow-lg shadow-primary/20">
+                  {formLoading ? "Sending..." : "Send Message"} <Send className="w-4 h-4" />
                 </Button>
               </form>
             </Card>
