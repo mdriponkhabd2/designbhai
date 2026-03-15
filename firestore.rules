@@ -40,10 +40,9 @@ service cloud.firestore {
 
     match /orders/{orderId} {
       allow create: if true;
-      // Allow users to list only their own orders via a filtered query
+      // Allow users to list and get only their own orders via a filtered query
       // Admins can see all orders
-      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow list, get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();
     }
 

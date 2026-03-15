@@ -11,6 +11,10 @@
           "type": "string",
           "description": "Unique identifier for the Order."
         },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who placed the order. Can be null for guest orders."
+        },
         "fullName": {
           "type": "string",
           "description": "Full name of the customer."
