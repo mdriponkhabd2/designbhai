@@ -110,12 +110,50 @@ const DEFAULT_DATA = {
       orderLink: '#'
     },
     { 
+      id: 'd2', 
+      name: 'Standard Package', 
+      price: '12,000', 
+      category: 'design',
+      isPopular: true,
+      description: 'Ideal for growing businesses.',
+      features: ['20 Social Media Post Designs', '5 Banner Designs', '5 Story Designs', 'Delivery Time: 2–3 Days', '3 Revisions', 'Priority Support'],
+      orderLink: '#'
+    },
+    { 
+      id: 'd3', 
+      name: 'Premium Package', 
+      price: '20,000', 
+      category: 'design',
+      description: 'Complete solution for serious businesses.',
+      features: ['40 Social Media Post Designs', '10 Banner Designs', '10 Story Designs', 'Custom Design Requests', 'Unlimited Revisions', 'Priority Delivery'],
+      orderLink: '#'
+    },
+    { 
       id: 'w1', 
       name: '🟢 Starter Package', 
       price: '2,999', 
       category: 'website',
       description: 'Perfect for beginners.', 
       features: ['1 Professional Landing Page', '1 Website Setup', '5GB Monthly Hosting', 'Free Domain (.com / .shop)', 'Mobile Responsive Design', 'Basic Support'],
+      orderLink: '#'
+    },
+    { 
+      id: 'w2', 
+      name: '🔵 Business Package', 
+      price: '5,999', 
+      category: 'website',
+      isPopular: true,
+      description: 'Ideal for growing businesses.', 
+      features: ['Premium Landing Page Design', '1 Complete Website', '5GB Fast Hosting (Monthly)', 'Free Domain (.com / .shop)', 'Fully Mobile Responsive', 'SEO Friendly Setup', 'Priority Support'],
+      orderLink: '#'
+    },
+    { 
+      id: 'w3', 
+      name: '🟣 Premium Package', 
+      price: '9,999', 
+      category: 'website',
+      description: 'High-quality and optimized website.', 
+      features: ['High Converting Landing Page', 'Professional Business Website', '5GB High Speed Hosting (Monthly)', 'Free Domain (.com / .shop)', 'Advanced UI Design', 'SEO Optimization', 'Premium Support'],
       orderLink: '#'
     }
   ],
@@ -135,6 +173,14 @@ const DEFAULT_DATA = {
       description: 'Ideal for growing businesses.',
       isPopular: true,
       features: ['5 Websites', '15GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain', 'Unlimited Email Accounts', 'cPanel Access', 'Weekly Backup', '24/7 Priority Support'],
+      orderLink: '#'
+    },
+    {
+      id: 'h3',
+      name: 'Pro Hosting',
+      price: '699',
+      description: 'Best for high-traffic websites.',
+      features: ['Unlimited Websites', '50GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain', 'Unlimited Email Accounts', 'cPanel Access', 'Daily Backup', 'LiteSpeed Optimization', '24/7 Premium Support'],
       orderLink: '#'
     }
   ],
@@ -169,9 +215,11 @@ const DEFAULT_DATA = {
 
 export function useAdminData() {
   const db = useFirestore();
-  // Using a memoized document reference for real-time sync across all users
+  
+  // Memoize the doc reference to prevent infinite re-renders
   const configRef = useMemo(() => {
     const ref = doc(db, "website_config", "main");
+    // Internal Studio hint for memoization tracking
     (ref as any).__memo = true;
     return ref;
   }, [db]);
@@ -183,7 +231,6 @@ export function useAdminData() {
     return {
       ...DEFAULT_DATA,
       ...firestoreData,
-      // Ensure nested objects are merged correctly
       settings: { ...DEFAULT_DATA.settings, ...(firestoreData.settings || {}) },
       about: { ...DEFAULT_DATA.about, ...(firestoreData.about || {}) },
       contact: { ...DEFAULT_DATA.contact, ...(firestoreData.contact || {}) },
@@ -191,7 +238,7 @@ export function useAdminData() {
   }, [firestoreData]);
 
   const saveData = (newData: typeof DEFAULT_DATA) => {
-    // Save to Firestore so all users see the updates immediately
+    // Non-blocking update to Firestore
     setDoc(doc(db, "website_config", "main"), newData);
   };
 
