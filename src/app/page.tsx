@@ -18,7 +18,10 @@ import {
   Layout,
   Layers,
   Monitor,
-  ImageIcon
+  ImageIcon,
+  Check,
+  Server,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -144,6 +147,94 @@ export default function LandingPage() {
                 </Card>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Packages Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16 space-y-4">
+            <Badge variant="secondary" className="px-4 py-1 text-primary">Pricing Plans</Badge>
+            <h2 className="text-4xl font-headline font-bold">Choose Your Package</h2>
+            <p className="text-muted-foreground">Affordable design solutions for every budget.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {data.packages.map((pkg) => (
+              <Card key={pkg.id} className={`relative p-8 rounded-3xl border-border/50 shadow-sm overflow-hidden flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10' : ''}`}>
+                {pkg.isPopular && (
+                  <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-4 py-1 rounded-bl-xl uppercase tracking-tighter">
+                    Most Popular
+                  </div>
+                )}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
+                  <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                </div>
+                <div className="mb-8">
+                  <span className="text-4xl font-bold text-primary">৳{pkg.price}</span>
+                  <span className="text-muted-foreground text-sm ml-1">/ project</span>
+                </div>
+                <ul className="space-y-4 mb-8 flex-1">
+                  {pkg.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Check className="w-3 h-3" />
+                      </div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button className={`w-full rounded-xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`} asChild>
+                  <Link href={pkg.orderLink}>Order Now</Link>
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Hosting Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="bg-slate-900 rounded-[3rem] p-12 lg:p-20 text-white overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary opacity-10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+              <div className="space-y-8">
+                <Badge className="bg-primary/20 text-primary border-primary/30">Web Hosting</Badge>
+                <h2 className="text-4xl lg:text-5xl font-headline font-bold">Ultra-Fast Hosting <br />For Your Brand</h2>
+                <p className="text-slate-400 text-lg">Don't let a slow website kill your business. Our premium hosting ensures your portfolio is always fast and secure.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {data.hosting.features.slice(0, 4).map((f, i) => (
+                    <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                      <Zap className="w-4 h-4 text-primary" />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="lg:pl-12">
+                <Card className="bg-white/5 border-white/10 p-8 rounded-3xl backdrop-blur-sm">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                      <Server className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xl">{data.hosting.name}</h4>
+                      <p className="text-xs text-slate-400">Unlimited Potential</p>
+                    </div>
+                  </div>
+                  <div className="mb-8">
+                    <span className="text-5xl font-bold text-primary">৳{data.hosting.price.split(' ')[0]}</span>
+                    <span className="text-slate-400 text-sm ml-2">{data.hosting.price.split(' ').slice(1).join(' ')}</span>
+                  </div>
+                  <Button size="lg" className="w-full rounded-2xl h-14 font-bold shadow-xl shadow-primary/10" asChild>
+                    <Link href={data.hosting.orderLink}>Get Started Now</Link>
+                  </Button>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>

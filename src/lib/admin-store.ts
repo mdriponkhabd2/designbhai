@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -13,6 +14,25 @@ export interface ServiceItem {
   id: string;
   title: string;
   description: string;
+}
+
+export interface PricingPackage {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  features: string[];
+  orderLink: string;
+  isPopular?: boolean;
+}
+
+export interface HostingOption {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  features: string[];
+  orderLink: string;
 }
 
 export interface AboutData {
@@ -32,7 +52,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v3';
+const STORAGE_KEY = 'designbhai_admin_data_v4';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -49,6 +69,41 @@ const DEFAULT_DATA = {
     { id: '3', title: 'Social Media', description: 'Engaging content and graphic assets to boost your social presence and growth.' },
     { id: '4', title: 'Branding', description: 'Complete brand strategies including typography, colors, and design guidelines.' },
   ],
+  packages: [
+    { 
+      id: 'p1', 
+      name: 'Basic Plan', 
+      price: '1,500', 
+      description: 'Perfect for startups and individuals.', 
+      features: ['Logo Design (2 concepts)', 'Business Card', '3 Revisions', 'High Res Files'],
+      orderLink: '#'
+    },
+    { 
+      id: 'p2', 
+      name: 'Standard Plan', 
+      price: '3,500', 
+      description: 'Best for growing businesses.', 
+      features: ['Logo Design (4 concepts)', 'Social Media Kit', 'Stationery Design', 'Unlimited Revisions'],
+      orderLink: '#',
+      isPopular: true
+    },
+    { 
+      id: 'p3', 
+      name: 'Premium Plan', 
+      price: '7,000', 
+      description: 'Full branding for enterprises.', 
+      features: ['Full Brand Identity', 'Website UI/UX', 'Brand Guidelines', 'Source Files Included'],
+      orderLink: '#'
+    }
+  ],
+  hosting: {
+    id: 'h1',
+    name: 'Business Hosting',
+    price: '2,000 /yr',
+    description: 'Ultra-fast and secure hosting for your creative website.',
+    features: ['10GB SSD Storage', 'Free SSL Certificate', 'Daily Backups', '24/7 Support', 'Free Domain (.com)'],
+    orderLink: '#'
+  },
   about: {
     text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh. We believe every pixel tells a story, and we are here to help you tell yours effectively.',
     imageUrl: 'https://picsum.photos/seed/studio/800/600'
@@ -84,7 +139,9 @@ export function useAdminData() {
           settings: {
             ...DEFAULT_DATA.settings,
             ...(parsed.settings || {})
-          }
+          },
+          packages: parsed.packages || DEFAULT_DATA.packages,
+          hosting: parsed.hosting || DEFAULT_DATA.hosting
         });
       } catch (e) {
         console.error("Failed to parse stored data", e);

@@ -12,7 +12,8 @@ import {
   Settings, 
   LogOut,
   ChevronRight,
-  MessageSquareText
+  MessageSquareText,
+  CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const navItems = [
   { name: "Messages", icon: MessageSquareText, href: "/admin/messages" },
   { name: "Portfolio", icon: ImageIcon, href: "/admin/portfolio" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
+  { name: "Pricing & Hosting", icon: CreditCard, href: "/admin/pricing" },
   { name: "About Us", icon: User, href: "/admin/about" },
   { name: "Contact", icon: Phone, href: "/admin/contact" },
   { name: "Settings", icon: Settings, href: "/admin/settings" },
