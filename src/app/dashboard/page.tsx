@@ -4,22 +4,24 @@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { collection, query, where, orderBy } from "firebase/firestore";
-import { ShoppingBag, Clock, Package } from "lucide-react";
+import { ShoppingBag, Clock, Package, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useAdminData } from "@/lib/admin-store";
 
 export default function UserDashboard() {
   const { user, isUserLoading } = useUser();
+  const { data: adminData } = useAdminData();
   const db = useFirestore();
 
   const ordersQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
-    // Query MUST include the userId filter to pass security rules for listing
+    // Security rules require listing to be filtered by userId
     return query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
@@ -68,7 +70,7 @@ export default function UserDashboard() {
               [1, 2].map(i => <Skeleton key={i} className="h-32 w-full rounded-2xl" />)
             ) : orders && orders.length > 0 ? (
               orders.map((order) => (
-                <Card key={order.id} className="border-none shadow-sm rounded-2xl overflow-hidden">
+                <Card key={order.id} className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
                   <div className="flex flex-col md:flex-row">
                     <div className="p-6 flex-1 space-y-4">
                       <div className="flex items-center justify-between">
@@ -83,14 +85,20 @@ export default function UserDashboard() {
                           <Clock className="w-3 h-3" /> 
                           {order.createdAt ? format(order.createdAt.toDate(), "PP") : "Recent"}
                         </span>
-                        <span>Price: ৳{order.packagePrice}</span>
+                        <span className="font-bold text-primary">Price: ৳{order.packagePrice}</span>
+                        <span className="font-mono text-xs">TrxID: {order.trxId}</span>
                       </div>
                     </div>
-                    <div className="bg-muted/30 p-6 md:w-48 flex items-center justify-center border-l border-border/10">
-                      <div className="text-center">
-                        <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Payment Method</p>
-                        <p className="font-bold text-sm">{order.paymentMethod}</p>
-                      </div>
+                    <div className="bg-primary/5 p-6 md:w-56 flex flex-col items-center justify-center border-l border-border/10">
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground mb-3">Support</p>
+                      <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl" asChild>
+                        <Link 
+                          href={`https://wa.me/${adminData.contact.phones[0]?.replace(/\D/g, '')}?text=Hello, I have an inquiry about my order for ${order.packageName}. TrxID: ${order.trxId}`}
+                          target="_blank"
+                        >
+                          <MessageCircle className="w-4 h-4 text-green-500" /> WhatsApp Support
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 </Card>
