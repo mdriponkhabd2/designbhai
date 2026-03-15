@@ -53,7 +53,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v7';
+const STORAGE_KEY = 'designbhai_admin_data_v8';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -73,46 +73,52 @@ const DEFAULT_DATA = {
   packages: [
     { 
       id: 'p1', 
-      name: 'Basic Package', 
-      price: '6,000', 
-      description: 'Monthly Social Media Retainer.', 
+      name: '🟢 Starter Package', 
+      price: '2,999', 
+      description: 'Perfect for individuals and small businesses starting online.', 
       features: [
-        '10 Social Media Post Designs',
-        '2 Banner Designs',
-        'Delivery Time: 3–5 Days',
-        '1 Revision',
-        'Basic Support'
+        '1 Professional Landing Page',
+        '1 Website Setup',
+        '5GB Monthly Hosting',
+        'Free Domain (.com / .shop)',
+        'Mobile Responsive Design',
+        'Basic Support',
+        '🚀 Best for beginners.'
       ],
       orderLink: '#'
     },
     { 
       id: 'p2', 
-      name: 'Standard Package', 
-      price: '12,000', 
-      description: 'Ideal for growing brands.', 
+      name: '🔵 Business Package', 
+      price: '5,999', 
+      description: 'Ideal for growing businesses that need a professional online presence.', 
       features: [
-        '20 Social Media Post Designs',
-        '5 Banner Designs',
-        '5 Story Designs',
-        'Delivery Time: 2–3 Days',
-        '3 Revisions',
-        'Priority Support'
+        'Premium Landing Page Design',
+        '1 Complete Website',
+        '5GB Fast Hosting (Monthly)',
+        'Free Domain (.com / .shop)',
+        'Fully Mobile Responsive',
+        'SEO Friendly Setup',
+        'Priority Support',
+        '⭐ Perfect for business owners.'
       ],
       orderLink: '#',
       isPopular: true
     },
     { 
       id: 'p3', 
-      name: 'Premium Package', 
-      price: '20,000', 
-      description: 'Best for high-volume content.', 
+      name: '🟣 Premium Package', 
+      price: '9,999', 
+      description: 'Best for brands who want a high-quality and optimized website.', 
       features: [
-        '40 Social Media Post Designs',
-        '10 Banner Designs',
-        '10 Story Designs',
-        'Custom Design Requests',
-        'Unlimited Revisions',
-        'Priority Delivery'
+        'High Converting Landing Page',
+        'Professional Business Website',
+        '5GB High Speed Hosting (Monthly)',
+        'Free Domain (.com / .shop)',
+        'Advanced UI Design',
+        'SEO Optimization',
+        'Premium Support',
+        '🔥 Complete solution for serious businesses.'
       ],
       orderLink: '#'
     }
