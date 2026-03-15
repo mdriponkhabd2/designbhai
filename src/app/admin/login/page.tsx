@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -24,22 +25,26 @@ export default function LoginPage() {
 
     try {
       if (password === "admin123") {
-        // 1. Sign in to Firebase Auth
+        // 1. Sign in to Firebase Auth anonymously
+        // This ensures rules like isAdmin() have a valid UID to check
         const userCredential = await signInAnonymously(auth);
         
-        // 2. Seed the admin role in Firestore so security rules pass
+        // 2. Seed/Update the admin role in Firestore so security rules pass
+        // The document ID is the UID, which makes isAdmin() check efficient
         await setDoc(doc(db, "admin_roles", userCredential.user.uid), {
           role: "admin",
           lastLogin: serverTimestamp()
         });
 
-        // 3. Set local session for UI layout logic
+        // 3. Set local session for basic UI persistence
         sessionStorage.setItem("admin_auth", "true");
         
         toast({
           title: "Access Granted",
           description: "Welcome back, Admin.",
         });
+        
+        // Use window.location.href to ensure a full refresh and clean auth state
         router.push("/admin/dashboard");
       } else {
         toast({

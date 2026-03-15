@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -18,7 +19,8 @@ service cloud.firestore {
       // Allow users to read their own role doc to verify status
       allow get: if isSignedIn() && request.auth.uid == adminUid;
       allow list: if isAdmin();
-      // Allow creation during bootstrap/login phase
+      // Allow creation during login phase for any signed-in user
+      // In production, you might want to restrict this to specific UIDs
       allow create: if isSignedIn();
       allow update, delete: if isAdmin();
     }
@@ -49,8 +51,9 @@ service cloud.firestore {
     }
 
     match /contactMessages/{messageId} {
-      // Public can CREATE messages, but only Admins can READ/LIST them
+      // Public can CREATE messages (required for landing page contact form)
       allow create: if true;
+      // ONLY Admins can READ/LIST/DELETE messages
       allow get, list: if isAdmin();
       allow update, delete: if isAdmin();
     }
