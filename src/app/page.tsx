@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAdminData } from "@/lib/admin-store";
@@ -20,7 +21,8 @@ import {
   Palette,
   Layout,
   Layers,
-  Monitor
+  Monitor,
+  ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -149,12 +151,18 @@ export default function LandingPage() {
             {filteredPortfolio.map((item, idx) => (
               <Card key={item.id} className="group border-none overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${idx * 100}ms` }}>
                 <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image 
-                    src={item.imageUrl} 
-                    alt={item.title} 
-                    fill 
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
+                  {item.imageUrl ? (
+                    <Image 
+                      src={item.imageUrl} 
+                      alt={item.title} 
+                      fill 
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center">
+                      <ImageIcon className="w-8 h-8 text-muted-foreground/20" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
                     <span className="text-primary font-bold uppercase tracking-widest text-[10px] mb-2">{item.category}</span>
                     <h3 className="text-white text-xl font-bold">{item.title}</h3>
@@ -199,12 +207,18 @@ export default function LandingPage() {
           <div className="relative aspect-square lg:aspect-auto lg:h-[500px]">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl" />
             <div className="relative h-full w-full rounded-3xl overflow-hidden shadow-2xl">
-              <Image 
-                src={data.about.imageUrl} 
-                alt="About DesignBhai" 
-                fill 
-                className="object-cover"
-              />
+              {data.about.imageUrl ? (
+                <Image 
+                  src={data.about.imageUrl} 
+                  alt="About DesignBhai" 
+                  fill 
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <ImageIcon className="w-12 h-12 text-muted-foreground/20" />
+                </div>
+              )}
             </div>
           </div>
           <div className="space-y-6">

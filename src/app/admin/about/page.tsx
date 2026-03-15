@@ -1,41 +1,31 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAdminData } from "@/lib/admin-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, RefreshCcw } from "lucide-react";
+import { Save, RefreshCcw, ImageIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Image from "next/image";
 
 export default function AboutPage() {
   const { data, saveData, isLoaded } = useAdminData();
   const [formData, setFormData] = useState({ text: "", imageUrl: "" });
-  const [isEditing, setIsEditing] = useState(false);
 
-  // Initialize form data when loaded
-  useState(() => {
+  useEffect(() => {
     if (isLoaded) {
       setFormData({ text: data.about.text, imageUrl: data.about.imageUrl });
     }
-  });
-
-  // Re-sync if data changes externally or first load
-  useState(() => {
-     if (isLoaded) {
-        setFormData({ text: data.about.text, imageUrl: data.about.imageUrl });
-     }
-  });
+  }, [isLoaded, data.about]);
 
   if (!isLoaded) return null;
 
   const handleSave = () => {
     saveData({ ...data, about: formData });
-    setIsEditing(false);
     toast({ title: "Section updated", description: "About Us content has been saved successfully." });
   };
 
@@ -94,12 +84,19 @@ export default function AboutPage() {
             <CardContent className="p-0">
               <div className="p-6 space-y-6">
                 <div className="relative aspect-video rounded-lg overflow-hidden border shadow-inner bg-muted">
-                  <Image 
-                    src={formData.imageUrl} 
-                    alt="About Preview" 
-                    fill 
-                    className="object-cover"
-                  />
+                  {formData.imageUrl ? (
+                    <Image 
+                      src={formData.imageUrl} 
+                      alt="About Preview" 
+                      fill 
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2">
+                      <ImageIcon className="w-8 h-8 opacity-20" />
+                      <span className="text-xs">No image URL provided</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-4">
                   <h3 className="text-2xl font-headline font-bold text-primary">Our Story</h3>
