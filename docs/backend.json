@@ -1,6 +1,19 @@
 
 {
   "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents a registered customer.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
     "Order": {
       "title": "Order",
       "description": "Represents a service order placed by a customer.",
@@ -19,46 +32,19 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["fullName", "phoneNumber", "packageName", "paymentMethod", "trxId", "status", "userId"]
-    },
-    "Wallet": {
-      "title": "Wallet",
-      "description": "User's virtual balance and transaction history.",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string" },
-        "balance": { "type": "number" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      }
-    },
-    "WalletRequest": {
-      "title": "Wallet Request",
-      "description": "Request to add money to wallet.",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string" },
-        "amount": { "type": "number" },
-        "paymentMethod": { "type": "string" },
-        "trxId": { "type": "string" },
-        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
-        "createdAt": { "type": "string", "format": "date-time" }
-      }
     }
   },
   "auth": {
     "providers": ["password", "anonymous"]
   },
   "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/backend/entities/User" },
+      "description": "Registered user profiles."
+    },
     "/orders/{orderId}": {
       "schema": { "$ref": "#/backend/entities/Order" },
       "description": "Collection for customer orders."
-    },
-    "/wallets/{uid}": {
-      "schema": { "$ref": "#/backend/entities/Wallet" },
-      "description": "Stores user virtual balance."
-    },
-    "/wallet_requests/{requestId}": {
-      "schema": { "$ref": "#/backend/entities/WalletRequest" },
-      "description": "Money add requests."
     },
     "/admin_roles/{uid}": {
       "schema": {

@@ -8,14 +8,20 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Simplified admin check to avoid recursive dependency errors
       return isSignedIn() && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
+    }
+
+    match /users/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isSignedIn() && (request.auth.uid == uid || isAdmin());
     }
 
     match /admin_roles/{adminUid} {
       allow get: if isSignedIn() && request.auth.uid == adminUid;
       allow list, write: if isAdmin();
-      allow create: if isSignedIn();
+      allow create: if true; 
     }
 
     match /website_config/{configId} {
@@ -24,28 +30,20 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow create: if true; // Allow anyone to place an order
-      allow read, update, delete: if isAdmin();
-    }
-
-    match /wallets/{uid} {
-      allow get: if isAdmin();
-      allow write: if isAdmin();
-    }
-
-    match /wallet_requests/{requestId} {
-      allow create: if true; // Allow guests to request (if ever needed)
-      allow read, update, delete: if isAdmin();
-    }
-
-    match /contactMessages/{messageId} {
       allow create: if true;
-      allow read, write: if isAdmin();
+      allow list: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow get: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow update, delete: if isAdmin();
     }
     
     match /products/{productId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    match /contactMessages/{messageId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
     }
   }
 }

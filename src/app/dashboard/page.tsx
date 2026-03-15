@@ -1,95 +1,46 @@
 
 "use client";
 
-import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, limit } from "firebase/firestore";
+import { collection, query, where, orderBy } from "firebase/firestore";
 import { 
   ShoppingBag, 
   Package, 
   MessageCircle, 
   User as UserIcon, 
-  Wallet as WalletIcon, 
-  CreditCard,
-  PlusCircle,
   ShieldCheck,
   Mail,
-  Calendar
+  Calendar,
+  ExternalLink,
+  Clock
 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
 import { useAdminData } from "@/lib/admin-store";
 
 export default function UserDashboard() {
   const { user, isUserLoading } = useUser();
   const { data: adminData } = useAdminData();
   const db = useFirestore();
-  const [addAmount, setAddAmount] = useState("");
-  const [trxId, setTrxId] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtered queries to match Firestore Security Rules precisely
+  // Optimized query aligned with security rules
   const ordersQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
     return query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(20)
-    );
-  }, [user, db]);
-
-  const walletRef = useMemoFirebase(() => 
-    user ? doc(db, "wallets", user.uid) : null, 
-    [db, user]
-  );
-
-  const walletRequestsQuery = useMemoFirebase(() => {
-    if (!user || !db) return null;
-    return query(
-      collection(db, "wallet_requests"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(20)
+      orderBy("createdAt", "desc")
     );
   }, [user, db]);
 
   const { data: orders, isLoading: isOrdersLoading } = useCollection(ordersQuery);
-  const { data: walletData } = useDoc(walletRef);
-  const { data: walletRequests, isLoading: isWalletLoading } = useCollection(walletRequestsQuery);
-
-  const handleAddMoney = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    setIsSubmitting(true);
-    try {
-      await addDoc(collection(db, "wallet_requests"), {
-        userId: user.uid,
-        amount: Number(addAmount),
-        trxId: trxId.toUpperCase().trim(),
-        paymentMethod: "bKash/Nagad",
-        status: "pending",
-        createdAt: serverTimestamp()
-      });
-      toast({ title: "Request Sent", description: "Your wallet update request is pending verification." });
-      setAddAmount("");
-      setTrxId("");
-    } catch (error) {
-      // Error handled by global listener
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -100,192 +51,185 @@ export default function UserDashboard() {
     }
   };
 
-  if (isUserLoading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+  if (isUserLoading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/10">
+      <div className="text-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p className="text-muted-foreground font-medium">Loading your profile...</p>
+      </div>
+    </div>
+  );
 
   if (!user) return (
-    <div className="min-h-screen flex flex-col items-center justify-center space-y-6 bg-muted/30">
-      <h1 className="text-2xl font-bold">Please login to access your account.</h1>
-      <Button asChild className="rounded-xl px-10"><Link href="/login">Login Now</Link></Button>
+    <div className="min-h-screen flex flex-col items-center justify-center space-y-6 bg-muted/30 p-6">
+      <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center text-primary mb-2">
+        <UserIcon className="w-10 h-10" />
+      </div>
+      <h1 className="text-2xl font-bold text-center">Please login to track your orders.</h1>
+      <div className="flex gap-4">
+        <Button asChild className="rounded-xl px-10"><Link href="/login">Login</Link></Button>
+        <Button asChild variant="outline" className="rounded-xl px-10"><Link href="/signup">Sign Up</Link></Button>
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-muted/10">
+    <div className="min-h-screen bg-muted/5">
       <SiteNavbar />
       <main className="pt-32 pb-24 px-6">
         <div className="max-w-6xl mx-auto">
           
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 bg-white p-8 rounded-[2.5rem] shadow-sm border border-border/40">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                <UserIcon className="w-8 h-8" />
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 mb-10 bg-white p-8 rounded-[2.5rem] shadow-sm border border-border/40">
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 green-gradient rounded-[1.5rem] flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                <UserIcon className="w-10 h-10" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Welcome, {user.displayName || 'Customer'}</h1>
-                <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
-                  <Mail className="w-3.5 h-3.5" /> {user.email}
-                </p>
+                <h1 className="text-3xl font-bold tracking-tight">{user.displayName || 'Customer'}</h1>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5" /> {user.email}
+                  </p>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-green-500" /> Account Verified
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-2xl border border-border/50">
-              <div className="p-3 bg-white rounded-xl shadow-sm">
-                <WalletIcon className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Wallet Balance</p>
-                <p className="text-2xl font-black text-primary">৳{walletData?.balance || 0}</p>
-              </div>
+            <div className="flex gap-3">
+              <Button asChild className="rounded-xl gap-2 shadow-lg shadow-primary/10">
+                <Link href="/services">Order New Service</Link>
+              </Button>
+              <Button variant="outline" className="rounded-xl gap-2" asChild>
+                <Link 
+                  href={`https://wa.me/${adminData?.contact.phones[0]?.replace(/\D/g, '')}`}
+                  target="_blank"
+                >
+                  <MessageCircle className="w-4 h-4 text-[#25D366]" /> Live Support
+                </Link>
+              </Button>
             </div>
           </div>
 
           <Tabs defaultValue="orders" className="space-y-8">
-            <TabsList className="bg-white p-1 rounded-2xl border border-border/40 h-auto flex flex-wrap shadow-sm">
-              <TabsTrigger value="orders" className="rounded-xl px-6 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2">
+            <TabsList className="bg-white p-1 rounded-2xl border border-border/40 h-auto flex shadow-sm w-fit">
+              <TabsTrigger value="orders" className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2 font-bold">
                 <ShoppingBag className="w-4 h-4" /> My Orders
               </TabsTrigger>
-              <TabsTrigger value="wallet" className="rounded-xl px-6 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2">
-                <CreditCard className="w-4 h-4" /> Add Money
-              </TabsTrigger>
-              <TabsTrigger value="profile" className="rounded-xl px-6 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2">
-                <UserIcon className="w-4 h-4" /> My Profile
+              <TabsTrigger value="profile" className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2 font-bold">
+                <UserIcon className="w-4 h-4" /> Profile Info
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="orders" className="space-y-6">
               {isOrdersLoading ? (
                 <div className="space-y-4">
-                  <Skeleton className="h-32 w-full rounded-2xl" />
-                  <Skeleton className="h-32 w-full rounded-2xl" />
+                  <Skeleton className="h-40 w-full rounded-3xl" />
+                  <Skeleton className="h-40 w-full rounded-3xl" />
                 </div>
               ) : orders && orders.length > 0 ? (
                 orders.map((order) => (
-                  <Card key={order.id} className="border-none shadow-sm rounded-[2rem] overflow-hidden bg-white hover:shadow-md transition-shadow">
-                    <CardContent className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                      <div className="flex-1 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                              <Package className="w-5 h-5" />
+                  <Card key={order.id} className="border-none shadow-sm rounded-[2.5rem] overflow-hidden bg-white hover:shadow-md transition-all duration-300">
+                    <CardContent className="p-8">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div className="flex-1 space-y-4">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                              <Package className="w-6 h-6" />
                             </div>
-                            <span className="font-bold text-xl">{order.packageName}</span>
+                            <div>
+                              <span className="font-black text-xl text-foreground">{order.packageName}</span>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                {getStatusBadge(order.status)}
+                                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> Updated: {order.createdAt ? format(order.createdAt.toDate(), "PP") : "..."}
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                          {getStatusBadge(order.status)}
+                          
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-border/30">
+                            <div>
+                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Order ID</p>
+                              <p className="text-sm font-mono font-bold">#{order.id.slice(-6).toUpperCase()}</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Total Paid</p>
+                              <p className="text-lg font-bold text-primary">৳{order.packagePrice}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Transaction ID</p>
+                              <p className="text-sm font-mono font-bold bg-muted/50 px-3 py-1 rounded-lg w-fit select-all">{order.trxId}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-                          <div>
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Order Date</p>
-                            <p className="text-sm font-medium flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5" /> 
-                              {order.createdAt ? format(order.createdAt.toDate(), "PPpp") : "..."}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Amount Paid</p>
-                            <p className="text-xl font-bold text-primary">৳{order.packagePrice}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">TrxID</p>
-                            <p className="text-sm font-mono font-bold select-all bg-muted/50 px-2 py-0.5 rounded">{order.trxId}</p>
-                          </div>
+                        <div className="flex gap-2 w-full md:w-auto">
+                          <Button variant="outline" className="rounded-xl flex-1 md:flex-none gap-2" asChild>
+                             <Link 
+                                href={`https://wa.me/${adminData?.contact.phones[0]?.replace(/\D/g, '')}?text=Support request for Order #${order.id.slice(-6).toUpperCase()}`}
+                                target="_blank"
+                              >
+                                <MessageCircle className="w-4 h-4" /> Message Us
+                             </Link>
+                          </Button>
                         </div>
                       </div>
-                      <Button variant="outline" className="rounded-xl gap-2 border-primary/20" asChild>
-                        <Link 
-                          href={`https://wa.me/${adminData?.contact.phones[0]?.replace(/\D/g, '')}?text=Support for Order: ${order.packageName}`}
-                          target="_blank"
-                        >
-                          <MessageCircle className="w-4 h-4 text-[#25D366]" /> Support
-                        </Link>
-                      </Button>
                     </CardContent>
                   </Card>
                 ))
               ) : (
-                <div className="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-border/50">
+                <div className="text-center py-24 bg-white rounded-[3.5rem] border-2 border-dashed border-border/50">
                   <ShoppingBag className="w-16 h-16 text-muted-foreground/10 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold">No orders found</h3>
-                  <Button className="mt-6 rounded-xl" asChild><Link href="/services">Order Now</Link></Button>
+                  <h3 className="text-2xl font-bold">No orders found yet</h3>
+                  <p className="text-muted-foreground mt-2 max-w-xs mx-auto">Start your first project with us and track progress here!</p>
+                  <Button className="mt-8 rounded-xl px-12 h-12 font-bold shadow-lg" asChild><Link href="/services">Browse Services</Link></Button>
                 </div>
               )}
             </TabsContent>
 
-            <TabsContent value="wallet" className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white">
-                <CardHeader className="px-0 pt-0">
-                  <CardTitle className="flex items-center gap-2">
-                    <PlusCircle className="w-6 h-6 text-primary" /> Request Add Funds
-                  </CardTitle>
-                  <CardDescription>Send money and provide Transaction ID below.</CardDescription>
-                </CardHeader>
-                <form onSubmit={handleAddMoney} className="space-y-6 pt-4">
-                  <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-sm space-y-2">
-                    <p className="font-bold text-primary uppercase tracking-tighter">Payment Methods (Send Money):</p>
-                    <p>bKash: <span className="font-mono font-bold">01837679963</span></p>
-                    <p>Nagad: <span className="font-mono font-bold">01837679963</span></p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="amount">Amount (৳)</Label>
-                    <Input id="amount" type="number" value={addAmount} onChange={e => setAddAmount(e.target.value)} placeholder="e.g. 500" required className="rounded-xl h-12" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="trxId">Transaction ID (TrxID)</Label>
-                    <Input id="trxId" value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="Enter code" required className="rounded-xl h-12 font-mono uppercase" />
-                  </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-12 rounded-xl font-bold shadow-lg">
-                    {isSubmitting ? "Submitting..." : "Submit Request"}
-                  </Button>
-                </form>
-              </Card>
-
-              <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-white overflow-hidden">
-                <CardHeader className="px-0 pt-0">
-                  <CardTitle>Recent Wallet Requests</CardTitle>
-                </CardHeader>
-                <div className="space-y-4 pt-4">
-                  {isWalletLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-16 w-full rounded-xl" />
-                      <Skeleton className="h-16 w-full rounded-xl" />
-                    </div>
-                  ) : walletRequests && walletRequests.length > 0 ? (
-                    walletRequests.map((req) => (
-                      <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-border/40">
-                        <div>
-                          <p className="font-bold">৳{req.amount}</p>
-                          <p className="text-[10px] text-muted-foreground font-mono">{req.trxId}</p>
-                        </div>
-                        <Badge variant="outline" className={req.status === 'approved' ? 'bg-green-50 text-green-600 border-green-200' : req.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}>
-                          {req.status.toUpperCase()}
-                        </Badge>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-10 opacity-40">No wallet requests yet.</div>
-                  )}
-                </div>
-              </Card>
-            </TabsContent>
-
             <TabsContent value="profile">
-              <Card className="max-w-2xl mx-auto rounded-[2.5rem] border-none shadow-sm p-10 bg-white text-center">
-                <div className="w-24 h-24 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mx-auto mb-6">
-                  <UserIcon className="w-12 h-12" />
-                </div>
-                <h2 className="text-2xl font-bold">{user.displayName || 'Customer Account'}</h2>
-                <p className="text-muted-foreground mt-2">{user.email}</p>
-                <div className="grid grid-cols-2 gap-4 mt-10">
-                  <div className="p-6 rounded-3xl bg-muted/30 border border-border/40 text-center">
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Account Status</p>
-                    <p className="font-bold flex items-center justify-center gap-2 text-green-600">
-                      <ShieldCheck className="w-4 h-4" /> Verified
-                    </p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <Card className="lg:col-span-2 rounded-[2.5rem] border-none shadow-sm p-10 bg-white">
+                  <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
+                    <UserIcon className="w-5 h-5 text-primary" /> Profile Details
+                  </h3>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Display Name</p>
+                        <p className="text-lg font-medium p-4 bg-muted/20 rounded-2xl border border-border/30">{user.displayName || 'Not Set'}</p>
+                      </div>
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Email Address</p>
+                        <p className="text-lg font-medium p-4 bg-muted/20 rounded-2xl border border-border/30">{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="pt-6 border-t">
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-4">Account Security</p>
+                      <div className="flex items-center justify-between p-4 bg-green-50 border border-green-100 rounded-2xl">
+                        <div className="flex items-center gap-3">
+                          <ShieldCheck className="w-5 h-5 text-green-600" />
+                          <span className="font-bold text-green-800">Your account is fully secured</span>
+                        </div>
+                        <Badge className="bg-green-600 text-white border-none">Active</Badge>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-6 rounded-3xl bg-muted/30 border border-border/40 text-center">
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Member Since</p>
-                    <p className="font-bold">{user.metadata.creationTime ? format(new Date(user.metadata.creationTime), "MMM yyyy") : 'N/A'}</p>
+                </Card>
+
+                <Card className="rounded-[2.5rem] border-none shadow-sm p-8 bg-primary text-white text-center flex flex-col items-center justify-center space-y-6">
+                  <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center">
+                    <ShieldCheck className="w-10 h-10" />
                   </div>
-                </div>
-              </Card>
+                  <div>
+                    <h4 className="text-xl font-bold">DesignBhai Client</h4>
+                    <p className="text-white/80 text-sm mt-2">Member since {user.metadata.creationTime ? format(new Date(user.metadata.creationTime), "MMMM yyyy") : 'N/A'}</p>
+                  </div>
+                  <Button variant="secondary" className="w-full rounded-xl font-bold" asChild>
+                    <Link href="/portfolio">Explore Our Work</Link>
+                  </Button>
+                </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
