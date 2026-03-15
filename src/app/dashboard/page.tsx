@@ -64,7 +64,7 @@ export default function UserDashboard() {
 
   const { data: orders, isLoading: isOrdersLoading } = useCollection(ordersQuery);
   const { data: walletData } = useDoc(walletRef);
-  const { data: walletRequests } = useCollection(walletRequestsQuery);
+  const { data: walletRequests, isLoading: isWalletLoading } = useCollection(walletRequestsQuery);
 
   const handleAddMoney = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +74,7 @@ export default function UserDashboard() {
       await addDoc(collection(db, "wallet_requests"), {
         userId: user.uid,
         amount: Number(addAmount),
-        trxId: trxId,
+        trxId: trxId.toUpperCase(),
         paymentMethod: "bKash/Nagad",
         status: "pending",
         createdAt: serverTimestamp()
@@ -223,11 +223,11 @@ export default function UserDashboard() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="amount">Amount (৳)</Label>
-                    <Input id="amount" value={addAmount} onChange={e => setAddAmount(e.target.value)} placeholder="e.g. 500" required className="rounded-xl h-12" />
+                    <Input id="amount" type="number" value={addAmount} onChange={e => setAddAmount(e.target.value)} placeholder="e.g. 500" required className="rounded-xl h-12" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="trxId">Transaction ID (TrxID)</Label>
-                    <Input id="trxId" value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="Enter code" required className="rounded-xl h-12 font-mono" />
+                    <Input id="trxId" value={trxId} onChange={e => setTrxId(e.target.value)} placeholder="Enter code" required className="rounded-xl h-12 font-mono uppercase" />
                   </div>
                   <Button type="submit" disabled={isSubmitting} className="w-full h-12 rounded-xl font-bold shadow-lg">
                     {isSubmitting ? "Sending..." : "Request Update"}
@@ -240,18 +240,26 @@ export default function UserDashboard() {
                   <CardTitle>Recent Requests</CardTitle>
                 </CardHeader>
                 <div className="space-y-4 pt-4">
-                  {walletRequests?.map((req) => (
-                    <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-border/40">
-                      <div>
-                        <p className="font-bold">৳{req.amount}</p>
-                        <p className="text-[10px] text-muted-foreground font-mono">{req.trxId}</p>
-                      </div>
-                      <Badge variant="outline" className={req.status === 'approved' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}>
-                        {req.status.toUpperCase()}
-                      </Badge>
+                  {isWalletLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-16 w-full rounded-xl" />
+                      <Skeleton className="h-16 w-full rounded-xl" />
                     </div>
-                  ))}
-                  {walletRequests?.length === 0 && <div className="text-center py-10 opacity-40">No requests yet.</div>}
+                  ) : walletRequests && walletRequests.length > 0 ? (
+                    walletRequests.map((req) => (
+                      <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 border border-border/40">
+                        <div>
+                          <p className="font-bold">৳{req.amount}</p>
+                          <p className="text-[10px] text-muted-foreground font-mono">{req.trxId}</p>
+                        </div>
+                        <Badge variant="outline" className={req.status === 'approved' ? 'bg-green-50 text-green-600 border-green-200' : req.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}>
+                          {req.status.toUpperCase()}
+                        </Badge>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10 opacity-40">No requests yet.</div>
+                  )}
                 </div>
               </Card>
             </TabsContent>

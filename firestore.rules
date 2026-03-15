@@ -23,12 +23,12 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      // Create: Anyone can create
+      // Create: Anyone can create (Lead generation)
       allow create: if true;
       
-      // Get/List: Admin can see everything, Users can only see their own
-      allow get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow list: if isAdmin() || (isSignedIn() && request.query.limit <= 100);
+      // Read: Admin can see everything, Users can only see their own
+      // Using 'read' covers both 'get' and 'list'
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       
       allow update, delete: if isAdmin();
     }
@@ -40,8 +40,8 @@ service cloud.firestore {
 
     match /wallet_requests/{requestId} {
       allow create: if isSignedIn();
-      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow list: if isAdmin() || (isSignedIn() && request.query.limit <= 100);
+      // Read: Users can only see their own requests, Admin sees everything
+      allow read: if isAdmin() || (isSignedIn() && (resource == null || resource.data.userId == request.auth.uid));
       allow update, delete: if isAdmin();
     }
 
