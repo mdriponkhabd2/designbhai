@@ -1,238 +1,65 @@
+
 {
   "entities": {
-    "PortfolioItem": {
+    "Order": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "PortfolioItem",
+      "title": "Order",
       "type": "object",
-      "description": "Represents an individual item in the website's design portfolio.",
+      "description": "Represents a service order placed by a customer.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the PortfolioItem entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title or name of the portfolio item."
-        },
-        "category": {
-          "type": "string",
-          "description": "The category to which the portfolio item belongs (e.g., 'Branding', 'Web Design')."
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "The URL of the main image for the portfolio item.",
-          "format": "uri"
-        },
-        "description": {
-          "type": "string",
-          "description": "A detailed description of the portfolio item."
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the portfolio item was first created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the portfolio item was last updated.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "category",
-        "imageUrl",
-        "createdAt",
-        "updatedAt"
-      ]
-    },
-    "Service": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Service",
-      "type": "object",
-      "description": "Represents a service offered by DesignBhai.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Service entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title or name of the service (e.g., 'Logo Design')."
-        },
-        "description": {
-          "type": "string",
-          "description": "A detailed description of the service offered."
-        },
-        "iconUrl": {
-          "type": "string",
-          "description": "The URL of an icon associated with the service, if applicable.",
-          "format": "uri"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the service was first created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the service was last updated.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "description",
-        "createdAt",
-        "updatedAt"
-      ]
-    },
-    "AboutUs": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "AboutUs",
-      "type": "object",
-      "description": "Represents the content for the 'About Us' section of the website. This is intended to be a singleton entity.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the AboutUs entity. Expected to be a fixed value like 'about-us-singleton'."
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "The URL of the image displayed in the 'About Us' section.",
-          "format": "uri"
-        },
-        "content": {
-          "type": "string",
-          "description": "The main text content for the 'About Us' section."
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the 'About Us' content was last updated.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "imageUrl",
-        "content",
-        "updatedAt"
-      ]
-    },
-    "ContactInfo": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "ContactInfo",
-      "type": "object",
-      "description": "Stores the primary contact information for the website. This is intended to be a singleton entity.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the ContactInfo entity. Expected to be a fixed value like 'contact-info-singleton'."
-        },
-        "address": {
-          "type": "string",
-          "description": "The physical address of DesignBhai."
-        },
-        "phoneNumbers": {
-          "type": "array",
-          "description": "An array of phone numbers for contact.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "email": {
-          "type": "string",
-          "description": "The primary email address for inquiries.",
-          "format": "email"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the contact information was last updated.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "address",
-        "phoneNumbers",
-        "email",
-        "updatedAt"
-      ]
-    },
-    "WebsiteSetting": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "WebsiteSetting",
-      "type": "object",
-      "description": "Stores global website settings such as title and favicon. This is intended to be a singleton entity.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the WebsiteSetting entity. Expected to be a fixed value like 'website-settings-singleton'."
-        },
-        "siteTitle": {
-          "type": "string",
-          "description": "The main title of the website."
-        },
-        "faviconUrl": {
-          "type": "string",
-          "description": "The URL to the website's favicon image.",
-          "format": "uri"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the website settings were last updated.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "siteTitle",
-        "faviconUrl",
-        "updatedAt"
-      ]
-    },
-    "ContactMessage": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "ContactMessage",
-      "type": "object",
-      "description": "Represents a message submitted through the website's contact form.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the ContactMessage entity."
+          "description": "Unique identifier for the Order."
         },
         "fullName": {
           "type": "string",
-          "description": "The full name of the sender."
+          "description": "Full name of the customer."
         },
-        "emailAddress": {
+        "phoneNumber": {
           "type": "string",
-          "description": "The email address of the sender.",
-          "format": "email"
+          "description": "Primary contact number."
         },
-        "message": {
+        "whatsAppNumber": {
           "type": "string",
-          "description": "The content of the message sent by the user."
+          "description": "WhatsApp number for communication."
         },
-        "receivedAt": {
+        "packageName": {
           "type": "string",
-          "description": "Timestamp when the message was received.",
+          "description": "Name of the package ordered."
+        },
+        "packagePrice": {
+          "type": "string",
+          "description": "Price of the package at the time of order."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Payment gateway used (bKash/Nagad).",
+          "enum": ["bKash", "Nagad"]
+        },
+        "trxId": {
+          "type": "string",
+          "description": "Transaction ID provided by the user."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the order.",
+          "enum": ["pending", "processing", "completed", "cancelled"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the order was placed.",
           "format": "date-time"
-        },
-        "isRead": {
-          "type": "boolean",
-          "description": "Indicates whether the message has been marked as read by an administrator."
         }
       },
       "required": [
         "id",
         "fullName",
-        "emailAddress",
-        "message",
-        "receivedAt",
-        "isRead"
+        "phoneNumber",
+        "packageName",
+        "paymentMethod",
+        "trxId",
+        "status",
+        "createdAt"
       ]
     }
   },
@@ -245,118 +72,21 @@
   "firestore": {
     "structure": [
       {
-        "path": "/admin_roles/{adminUid}",
+        "path": "/orders/{orderId}",
         "definition": {
-          "entityName": "AdminRole",
+          "entityName": "Order",
           "schema": {
-            "$ref": "#/backend/entities/AdminRole"
+            "$ref": "#/backend/entities/Order"
           },
-          "description": "A collection storing UIDs of authenticated administrators. The document ID is the Firebase Auth UID of the admin. Used for DBAC (Database-Based Access Control) to verify admin privileges in security rules. This collection allows for Authorization Independence, as rules only need to check for the existence of the current user's UID in this collection. Read/Write access is restricted to authenticated administrators.",
+          "description": "Collection for customer orders. Public can create, Admin can read/update.",
           "params": [
             {
-              "name": "adminUid",
-              "description": "The Firebase Authentication User ID (UID) of an administrator."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/portfolioItems/{portfolioItemId}",
-        "definition": {
-          "entityName": "PortfolioItem",
-          "schema": {
-            "$ref": "#/backend/entities/PortfolioItem"
-          },
-          "description": "A collection for individual portfolio items. Documents are publicly readable for displaying on the website, but only authenticated administrators have write access. All documents in this collection share the same security posture for simplicity and QAPs.",
-          "params": [
-            {
-              "name": "portfolioItemId",
-              "description": "The unique identifier for a portfolio item."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/services/{serviceId}",
-        "definition": {
-          "entityName": "Service",
-          "schema": {
-            "$ref": "#/backend/entities/Service"
-          },
-          "description": "A collection for services offered by DesignBhai. Documents are publicly readable, while write access is restricted to authenticated administrators. This ensures homogeneous security posture within the collection.",
-          "params": [
-            {
-              "name": "serviceId",
-              "description": "The unique identifier for a service."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/aboutUs/{aboutUsId}",
-        "definition": {
-          "entityName": "AboutUs",
-          "schema": {
-            "$ref": "#/backend/entities/AboutUs"
-          },
-          "description": "A singleton collection containing the 'About Us' content. Expected to contain a single document with a fixed ID (e.g., 'singleton'). The document is publicly readable but only writable by authenticated administrators. Provides Authorization Independence by directly applying admin-only write rules to the document itself.",
-          "params": [
-            {
-              "name": "aboutUsId",
-              "description": "The fixed identifier for the singleton 'About Us' document, e.g., 'singleton'."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/contactInfo/{contactInfoId}",
-        "definition": {
-          "entityName": "ContactInfo",
-          "schema": {
-            "$ref": "#/backend/entities/ContactInfo"
-          },
-          "description": "A singleton collection for the website's primary contact information, including the updated email address 'mdriponkha2@gmail.com'. Expected to contain a single document with a fixed ID (e.g., 'singleton'). This document is publicly readable but only editable by authenticated administrators. Authorization Independence is maintained by direct rule application.",
-          "params": [
-            {
-              "name": "contactInfoId",
-              "description": "The fixed identifier for the singleton 'Contact Info' document, e.g., 'singleton'."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/websiteSettings/{settingId}",
-        "definition": {
-          "entityName": "WebsiteSetting",
-          "schema": {
-            "$ref": "#/backend/entities/WebsiteSetting"
-          },
-          "description": "A singleton collection for global website settings like site title and favicon. Expected to contain a single document with a fixed ID (e.g., 'singleton'). This document is publicly readable for frontend configuration but only editable by authenticated administrators. Ensures Authorization Independence by having clear, direct access rules.",
-          "params": [
-            {
-              "name": "settingId",
-              "description": "The fixed identifier for the singleton 'Website Setting' document, e.g., 'singleton'."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/contactMessages/{messageId}",
-        "definition": {
-          "entityName": "ContactMessage",
-          "schema": {
-            "$ref": "#/backend/entities/ContactMessage"
-          },
-          "description": "A collection to store messages submitted via the contact form. Read and write access to these documents is strictly limited to authenticated administrators. This segregation supports QAPs for admin-only viewing and management, as well as enabling potential Cloud Functions on `onCreate` for email notifications.",
-          "params": [
-            {
-              "name": "messageId",
-              "description": "The unique identifier for a contact message."
+              "name": "orderId",
+              "description": "The unique ID for the order."
             }
           ]
         }
       }
-    ],
-    "reasoning": "The Firestore data structure for the DesignBhai Admin Panel is designed to be secure, scalable, and debuggable, adhering strictly to the provided core design principles and strategy mandates. \n\n**Authorization Independence:** This is achieved by centralizing the 'admin' role in a dedicated collection, `/admin_roles/{adminUid}`. Every document in this collection signifies that the corresponding `adminUid` is authorized as an administrator. This allows all security rules to perform a simple `exists()` check on `/admin_roles/$(request.auth.uid)` rather than relying on complex `get()` calls to parent documents or other data for authorization. For instance, to grant write access to any admin-editable content, the rule simply verifies the authenticated user's UID exists in the `admin_roles` collection. This ensures atomic operations and prevents cascading rule failures, making the system highly robust and easy to debug. All authorization context is inherently denormalized through this dedicated roles collection.\n\n**Querying for Authorization Purposes (QAPs):** The structure is explicitly designed to support Querying for Authorization Purposes. Collections are segregated based on their security posture:\n\n1.  **Publicly Readable & Admin Writable:** `portfolioItems`, `services`, `aboutUs`, `contactInfo`, `websiteSettings`. These collections are accessible for read operations by anyone (`allow read: if true;`), enabling efficient public website display without needing any filtering logic in security rules. Write operations are restricted solely to authenticated administrators, as determined by the `admin_roles` collection.\n2.  **Admin-Only Read/Write:** `contactMessages`, `admin_roles`. These collections are fully protected, allowing read and write access only to authenticated administrators. This structural segregation ensures that `list` queries on these collections will always return a fully authorized set of documents, eliminating the need for client-side filtering or complex, inefficient server-side filtering via rules.\n\n**Structural Segregation:** Data is organized into distinct top-level collections, each representing a homogeneous security posture. For example, `PortfolioItem`s are in `/portfolioItems` and `ContactMessage`s are in `/contactMessages`. This clear separation simplifies security rules significantly; instead of complex conditional logic within rules to differentiate access within a single collection, different collections inherently define different access levels. Singleton entities (`AboutUs`, `ContactInfo`, `WebsiteSetting`) are also placed in their own collections, each containing a single document with a predictable ID (e.g., 'singleton'), further simplifying their management and rule application. The `ContactInfo` document, specifically, will contain the updated email address `mdriponkha2@gmail.com` as requested.\n\n**Access Modeling:** The design leverages path-based ownership for the 'admin' role (`/admin_roles/{adminUid}`) where the document ID *is* the UID. This is the primary method for DBAC. All content management (Portfolio, Services, About, Contact, Settings) is treated as global data, managed by this single admin role.\n\nIn summary, the design prioritizes explicit authorization, clear data segregation, and a flat hierarchy where possible, making the system easy to manage, secure by default, and highly debuggable."
+    ]
   }
 }

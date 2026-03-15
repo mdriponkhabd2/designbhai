@@ -13,13 +13,15 @@ import {
   LogOut,
   ChevronRight,
   MessageSquareText,
-  CreditCard
+  CreditCard,
+  ShoppingBag
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
+  { name: "Orders", icon: ShoppingBag, href: "/admin/orders" },
   { name: "Messages", icon: MessageSquareText, href: "/admin/messages" },
   { name: "Portfolio", icon: ImageIcon, href: "/admin/portfolio" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
