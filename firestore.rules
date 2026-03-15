@@ -20,8 +20,8 @@ service cloud.firestore {
 
     match /admin_roles/{adminUid} {
       allow get: if isSignedIn() && request.auth.uid == adminUid;
-      allow list, write: if isAdmin();
-      allow create: if true; 
+      allow list: if isAdmin();
+      allow write: if isAdmin() || (isSignedIn() && request.auth.uid == adminUid && !exists(/databases/$(database)/documents/admin_roles/$(adminUid)));
     }
 
     match /website_config/{configId} {
@@ -31,8 +31,7 @@ service cloud.firestore {
 
     match /orders/{orderId} {
       allow create: if true;
-      allow list: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
-      allow get: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow read: if isSignedIn() && (isAdmin() || (resource != null && resource.data.userId == request.auth.uid));
       allow update, delete: if isAdmin();
     }
     
