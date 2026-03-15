@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -31,21 +30,25 @@ export interface WebsiteSettings {
   favicon: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data';
+const STORAGE_KEY = 'designbhai_admin_data_v2';
 
 const DEFAULT_DATA = {
   portfolio: [
     { id: '1', title: 'Brand Identity', category: 'Branding', imageUrl: 'https://picsum.photos/seed/design1/600/400' },
-    { id: '2', title: 'Coffee Shop Logo', category: 'Logo', imageUrl: 'https://picsum.photos/seed/design2/600/400' },
-    { id: '3', title: 'Fitness App', category: 'UI/UX', imageUrl: 'https://picsum.photos/seed/design3/600/400' },
+    { id: '2', title: 'Minimalist Coffee Logo', category: 'Logo Design', imageUrl: 'https://picsum.photos/seed/design2/600/400' },
+    { id: '3', title: 'Fitness App UI', category: 'UI/UX', imageUrl: 'https://picsum.photos/seed/design3/600/400' },
+    { id: '4', title: 'Social Media Ad Pack', category: 'Social Media', imageUrl: 'https://picsum.photos/seed/design4/600/400' },
+    { id: '5', title: 'Modern Business Card', category: 'Branding', imageUrl: 'https://picsum.photos/seed/design5/600/400' },
+    { id: '6', title: 'Corporate Brochure', category: 'Branding', imageUrl: 'https://picsum.photos/seed/design6/600/400' },
   ],
   services: [
-    { id: '1', title: 'Logo Design', description: 'Unique and memorable logos for your brand.' },
-    { id: '2', title: 'Web Design', description: 'Modern and responsive websites.' },
-    { id: '3', title: 'Social Media', description: 'Engaging graphics for your social presence.' },
+    { id: '1', title: 'Logo Design', description: 'Crafting unique and memorable visual identities that stand out in any industry.' },
+    { id: '2', title: 'Web Design', description: 'Modern, responsive, and user-centric websites that turn visitors into loyal customers.' },
+    { id: '3', title: 'Social Media', description: 'Engaging content and graphic assets to boost your social presence and growth.' },
+    { id: '4', title: 'Branding', description: 'Complete brand strategies including typography, colors, and design guidelines.' },
   ],
   about: {
-    text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh.',
+    text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh. We believe every pixel tells a story, and we are here to help you tell yours effectively.',
     imageUrl: 'https://picsum.photos/seed/studio/800/600'
   },
   contact: {
@@ -77,6 +80,8 @@ export function useAdminData() {
   const saveData = (newData: typeof DEFAULT_DATA) => {
     setData(newData);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+    // Dispatch custom event to sync across tabs if needed
+    window.dispatchEvent(new Event('storage'));
   };
 
   return { data, saveData, isLoaded };
