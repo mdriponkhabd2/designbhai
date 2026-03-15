@@ -52,6 +52,14 @@ export interface Testimonial {
   rating: number;
 }
 
+export interface ProductItem {
+  id: string;
+  title: string;
+  price: string;
+  imageUrl: string;
+  description: string;
+}
+
 export interface AboutData {
   text: string;
   imageUrl: string;
@@ -75,22 +83,21 @@ export interface WebsiteSettings {
   };
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v12';
+const STORAGE_KEY = 'designbhai_admin_data_v13';
 
 const DEFAULT_DATA = {
   portfolio: [
     { id: '1', title: 'Brand Identity', category: 'Branding', imageUrl: 'https://picsum.photos/seed/design1/600/400' },
     { id: '2', title: 'Minimalist Coffee Logo', category: 'Logo Design', imageUrl: 'https://picsum.photos/seed/design2/600/400' },
     { id: '3', title: 'Fitness App UI', category: 'UI/UX', imageUrl: 'https://picsum.photos/seed/design3/600/400' },
-    { id: '4', title: 'Social Media Ad Pack', category: 'Social Media', imageUrl: 'https://picsum.photos/seed/design4/600/400' },
-    { id: '5', title: 'Modern Business Card', category: 'Branding', imageUrl: 'https://picsum.photos/seed/design5/600/400' },
-    { id: '6', title: 'Corporate Brochure', category: 'Branding', imageUrl: 'https://picsum.photos/seed/design6/600/400' },
   ],
   services: [
-    { id: '1', title: 'Logo Design', description: 'Crafting unique and memorable visual identities that stand out in any industry.' },
-    { id: '2', title: 'Web Design', description: 'Modern, responsive, and user-centric websites that turn visitors into loyal customers.' },
-    { id: '3', title: 'Social Media', description: 'Engaging content and graphic assets to boost your social presence and growth.' },
-    { id: '4', title: 'Branding', description: 'Complete brand strategies including typography, colors, and design guidelines.' },
+    { id: '1', title: 'Logo Design', description: 'Crafting unique and memorable visual identities.' },
+    { id: '2', title: 'Web Design', description: 'Modern, responsive, and user-centric websites.' },
+  ],
+  products: [
+    { id: 'p1', title: 'Premium Logo Template', price: '500', imageUrl: 'https://picsum.photos/seed/prod1/400/300', description: 'Fully editable vector logo.' },
+    { id: 'p2', title: 'Landing Page UI Kit', price: '1200', imageUrl: 'https://picsum.photos/seed/prod2/400/300', description: 'Modern UI elements for web.' },
   ],
   packages: [
     { 
@@ -99,26 +106,7 @@ const DEFAULT_DATA = {
       price: '6,000', 
       category: 'design',
       description: 'Perfect for small social media presence.',
-      features: ['10 Social Media Post Designs', '2 Banner Designs', 'Delivery Time: 3–5 Days', '1 Revision', 'Basic Support'],
-      orderLink: '#'
-    },
-    { 
-      id: 'd2', 
-      name: 'Standard Package', 
-      price: '12,000', 
-      category: 'design',
-      isPopular: true,
-      description: 'Ideal for growing brands with higher demands.',
-      features: ['20 Social Media Post Designs', '5 Banner Designs', '5 Story Designs', 'Delivery Time: 2–3 Days', '3 Revisions', 'Priority Support', 'Most Popular'],
-      orderLink: '#'
-    },
-    { 
-      id: 'd3', 
-      name: 'Premium Package', 
-      price: '20,000', 
-      category: 'design',
-      description: 'Complete design solution for professional brands.',
-      features: ['40 Social Media Post Designs', '10 Banner Designs', '10 Story Designs', 'Custom Design Requests', 'Unlimited Revisions', 'Priority Delivery'],
+      features: ['10 Social Media Post Designs', '2 Banner Designs', 'Delivery Time: 3–5 Days', '1 Revision'],
       orderLink: '#'
     },
     { 
@@ -126,53 +114,8 @@ const DEFAULT_DATA = {
       name: '🟢 Starter Package', 
       price: '2,999', 
       category: 'website',
-      description: 'Perfect for individuals and small businesses starting online.', 
-      features: [
-        '1 Professional Landing Page',
-        '1 Website Setup',
-        '5GB Monthly Hosting',
-        'Free Domain (.com / .shop)',
-        'Mobile Responsive Design',
-        'Basic Support',
-        '🚀 Best for beginners.'
-      ],
-      orderLink: '#'
-    },
-    { 
-      id: 'w2', 
-      name: '🔵 Business Package', 
-      price: '5,999', 
-      category: 'website',
-      isPopular: true,
-      description: 'Ideal for growing businesses that need a professional online presence.', 
-      features: [
-        'Premium Landing Page Design',
-        '1 Complete Website',
-        '5GB Fast Hosting (Monthly)',
-        'Free Domain (.com / .shop)',
-        'Fully Mobile Responsive',
-        'SEO Friendly Setup',
-        'Priority Support',
-        '⭐ Perfect for business owners.'
-      ],
-      orderLink: '#'
-    },
-    { 
-      id: 'w3', 
-      name: '🟣 Premium Package', 
-      price: '9,999', 
-      category: 'website',
-      description: 'Best for brands who want a high-quality and optimized website.', 
-      features: [
-        'High Converting Landing Page',
-        'Professional Business Website',
-        '5GB High Speed Hosting (Monthly)',
-        'Free Domain (.com / .shop)',
-        'Advanced UI Design',
-        'SEO Optimization',
-        'Premium Support',
-        '🔥 Complete solution for serious businesses.'
-      ],
+      description: 'Perfect for beginners.', 
+      features: ['1 Landing Page', 'Website Setup', 'Free Domain'],
       orderLink: '#'
     }
   ],
@@ -181,35 +124,16 @@ const DEFAULT_DATA = {
       id: 'h1',
       name: 'Starter Hosting',
       price: '199',
-      description: 'Fast, Secure and Affordable Domain Hosting for Everyone',
-      features: ['1 Website', '5GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain (SOHO Domain Offer)', '5 Email Accounts', 'cPanel Access', '24/7 Support'],
-      orderLink: '#'
-    },
-    {
-      id: 'h2',
-      name: 'Business Hosting',
-      price: '399',
-      description: 'Ideal for growing businesses that need a professional online presence.',
-      features: ['5 Websites', '15GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain (SOHO Domain Offer)', 'Unlimited Email Accounts', 'cPanel Access', 'Weekly Backup', '24/7 Priority Support'],
-      orderLink: '#',
-      isPopular: true
-    },
-    {
-      id: 'h3',
-      name: 'Pro Hosting',
-      price: '699',
-      description: 'Best for brands who want a high-quality and optimized website.',
-      features: ['Unlimited Websites', '50GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain (SOHO Domain Offer)', 'Unlimited Email Accounts', 'cPanel Access', 'Daily Backup', 'LiteSpeed Speed Optimization', '24/7 Premium Support'],
+      description: 'Affordable hosting.',
+      features: ['1 Website', '5GB SSD', 'Free SSL'],
       orderLink: '#'
     }
   ],
   testimonials: [
-    { id: 'r1', name: 'Karim Ullah', role: 'E-commerce Owner', text: 'DesignBhai-r logo design package amar business-er porichiti bodle diyeche. Khub sundor kaz!', rating: 5 },
-    { id: 'r2', name: 'Jannat Ara', role: 'Blogger', text: 'Web hosting khub fast ebong support team khub help-ful. 100% recommended.', rating: 5 },
-    { id: 'r3', name: 'Sumon Ahmed', role: 'Startup Founder', text: 'Website development package-ti amar budget-er moddhei khub premium ekta site diyeche.', rating: 5 },
+    { id: 'r1', name: 'Karim Ullah', role: 'Client', text: 'Great service!', rating: 5 },
   ],
   about: {
-    text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh. We believe every pixel tells a story, and we are here to help you tell yours effectively.',
+    text: 'DesignBhai is a premier graphics design studio.',
     imageUrl: 'https://picsum.photos/seed/studio/800/600',
     team: [
       { id: 't1', name: 'Ripon Kha', designation: 'Graphics Designer', imageUrl: 'https://picsum.photos/seed/team1/400/400' },
@@ -219,7 +143,7 @@ const DEFAULT_DATA = {
   },
   contact: {
     address: 'Sadaynagaor, Austagram, Kishoregonj',
-    phones: ['01837679963', '01977679962'],
+    phones: ['01837679963'],
     email: 'mdriponkha2@gmail.com'
   },
   settings: {
@@ -246,21 +170,7 @@ export function useAdminData() {
         setData({
           ...DEFAULT_DATA,
           ...parsed,
-          contact: {
-            ...DEFAULT_DATA.contact,
-            ...(parsed.contact || {})
-          },
-          settings: {
-            ...DEFAULT_DATA.settings,
-            ...(parsed.settings || {})
-          },
-          about: {
-            ...DEFAULT_DATA.about,
-            ...(parsed.about || {})
-          },
-          packages: parsed.packages || DEFAULT_DATA.packages,
-          hostingPackages: parsed.hostingPackages || DEFAULT_DATA.hostingPackages,
-          testimonials: parsed.testimonials || DEFAULT_DATA.testimonials,
+          products: parsed.products || DEFAULT_DATA.products,
         });
       } catch (e) {
         console.error("Failed to parse stored data", e);

@@ -15,7 +15,8 @@ import {
   MessageSquareText,
   CreditCard,
   ShoppingBag,
-  Star
+  Star,
+  Package
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ const navItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { name: "Orders", icon: ShoppingBag, href: "/admin/orders" },
   { name: "Messages", icon: MessageSquareText, href: "/admin/messages" },
+  { name: "Products", icon: Package, href: "/admin/products" },
   { name: "Portfolio", icon: ImageIcon, href: "/admin/portfolio" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
   { name: "Pricing & Hosting", icon: CreditCard, href: "/admin/pricing" },
