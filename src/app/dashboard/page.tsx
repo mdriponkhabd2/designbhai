@@ -6,7 +6,7 @@ import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { collection, query, where, orderBy } from "firebase/firestore";
+import { collection, query, where, orderBy, limit } from "firebase/firestore";
 import { ShoppingBag, Clock, Package, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,10 +23,12 @@ export default function UserDashboard() {
   const ordersQuery = useMemoFirebase(() => {
     if (!user || !db) return null;
     // Security rules strictly require filtering by userId for non-admin list operations
+    // We add a limit to ensure consistency with common security best practices
     return query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
+      limit(50)
     );
   }, [user, db]);
 

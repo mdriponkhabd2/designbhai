@@ -23,8 +23,8 @@ service cloud.firestore {
     }
 
     match /website_config/{configId} {
-      // Everyone can read the website configuration (services, pricing, about, etc.)
-      allow get: if true;
+      // Everyone can read the website configuration
+      allow read: if true;
       // Only admins can update the website settings
       allow write: if isAdmin();
     }
@@ -53,8 +53,9 @@ service cloud.firestore {
       // Get: Admin can see any order, users can only see their own
       allow get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       
-      // List: Admin can list all, users can only list their own (requires query filter)
-      allow list: if isAdmin() || (isSignedIn() && request.query.limit <= 100 && (resource == null || resource.data.userId == request.auth.uid));
+      // List: Admin can list all, users can only list their own
+      // Ensure the query on the client filters by userId
+      allow list: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.userId);
       
       // Only admin can update (status) or delete
       allow update, delete: if isAdmin();

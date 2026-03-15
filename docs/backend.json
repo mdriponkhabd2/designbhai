@@ -2,10 +2,9 @@
 {
   "entities": {
     "Order": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Order",
-      "type": "object",
       "description": "Represents a service order placed by a customer.",
+      "type": "object",
       "properties": {
         "id": {
           "type": "string",
@@ -13,7 +12,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "The UID of the user who placed the order. Can be null for guest orders."
+          "description": "The UID of the user who placed the order. Used for security rule filtering."
         },
         "fullName": {
           "type": "string",
@@ -56,14 +55,12 @@
         }
       },
       "required": [
-        "id",
         "fullName",
         "phoneNumber",
         "packageName",
         "paymentMethod",
         "trxId",
-        "status",
-        "createdAt"
+        "status"
       ]
     }
   },
@@ -74,23 +71,22 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/orders/{orderId}",
-        "definition": {
-          "entityName": "Order",
-          "schema": {
-            "$ref": "#/backend/entities/Order"
-          },
-          "description": "Collection for customer orders. Public can create, Admin can read/update.",
-          "params": [
-            {
-              "name": "orderId",
-              "description": "The unique ID for the order."
-            }
-          ]
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/backend/entities/Order" },
+      "description": "Collection for customer orders. Users can only list their own orders."
+    },
+    "/admin_roles/{uid}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "role": { "type": "string", "enum": ["admin"] }
         }
-      }
-    ]
+      },
+      "description": "Stores administrative privileges."
+    },
+    "/website_config/main": {
+      "schema": { "type": "object" },
+      "description": "Global website configuration data."
+    }
   }
 }
