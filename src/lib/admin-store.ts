@@ -24,6 +24,7 @@ export interface PricingPackage {
   features: string[];
   orderLink: string;
   isPopular?: boolean;
+  category?: 'design' | 'website';
 }
 
 export interface HostingPackage {
@@ -53,7 +54,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v8';
+const STORAGE_KEY = 'designbhai_admin_data_v9';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -71,10 +72,41 @@ const DEFAULT_DATA = {
     { id: '4', title: 'Branding', description: 'Complete brand strategies including typography, colors, and design guidelines.' },
   ],
   packages: [
+    // Social Media Design Packages
     { 
-      id: 'p1', 
+      id: 'd1', 
+      name: 'Basic Package', 
+      price: '6,000', 
+      category: 'design',
+      description: 'Perfect for small social media presence.',
+      features: ['10 Social Media Post Designs', '2 Banner Designs', 'Delivery Time: 3–5 Days', '1 Revision', 'Basic Support'],
+      orderLink: '#'
+    },
+    { 
+      id: 'd2', 
+      name: 'Standard Package', 
+      price: '12,000', 
+      category: 'design',
+      isPopular: true,
+      description: 'Ideal for growing brands with higher demands.',
+      features: ['20 Social Media Post Designs', '5 Banner Designs', '5 Story Designs', 'Delivery Time: 2–3 Days', '3 Revisions', 'Priority Support', 'Most Popular'],
+      orderLink: '#'
+    },
+    { 
+      id: 'd3', 
+      name: 'Premium Package', 
+      price: '20,000', 
+      category: 'design',
+      description: 'Complete design solution for professional brands.',
+      features: ['40 Social Media Post Designs', '10 Banner Designs', '10 Story Designs', 'Custom Design Requests', 'Unlimited Revisions', 'Priority Delivery'],
+      orderLink: '#'
+    },
+    // Website Development Packages
+    { 
+      id: 'w1', 
       name: '🟢 Starter Package', 
       price: '2,999', 
+      category: 'website',
       description: 'Perfect for individuals and small businesses starting online.', 
       features: [
         '1 Professional Landing Page',
@@ -88,9 +120,11 @@ const DEFAULT_DATA = {
       orderLink: '#'
     },
     { 
-      id: 'p2', 
+      id: 'w2', 
       name: '🔵 Business Package', 
       price: '5,999', 
+      category: 'website',
+      isPopular: true,
       description: 'Ideal for growing businesses that need a professional online presence.', 
       features: [
         'Premium Landing Page Design',
@@ -102,13 +136,13 @@ const DEFAULT_DATA = {
         'Priority Support',
         '⭐ Perfect for business owners.'
       ],
-      orderLink: '#',
-      isPopular: true
+      orderLink: '#'
     },
     { 
-      id: 'p3', 
+      id: 'w3', 
       name: '🟣 Premium Package', 
       price: '9,999', 
+      category: 'website',
       description: 'Best for brands who want a high-quality and optimized website.', 
       features: [
         'High Converting Landing Page',

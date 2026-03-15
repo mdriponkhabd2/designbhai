@@ -32,22 +32,69 @@ export default function ServicesPage() {
     setIsCheckoutOpen(true);
   };
 
+  const designPackages = data.packages.filter(p => p.category === 'design' || !p.category);
+  const websitePackages = data.packages.filter(p => p.category === 'website');
+
   return (
     <div className="min-h-screen bg-background">
       <SiteNavbar />
       
       <main className="pt-32 pb-24">
-        {/* Design Packages Section */}
+        {/* Social Media Design Packages Section */}
         <section className="py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16 space-y-4">
-              <Badge variant="outline" className="px-4 py-1 text-primary">Pricing Plans</Badge>
+              <Badge variant="outline" className="px-4 py-1 text-primary">Design Plans</Badge>
+              <h1 className="text-5xl font-headline font-bold">Social Media Design Packages</h1>
+              <p className="text-muted-foreground">Professional designs for your brand's social presence.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {designPackages.map((pkg) => (
+                <Card key={pkg.id} className={`relative p-8 rounded-[2rem] border-border/50 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10' : ''}`}>
+                  {pkg.isPopular && (
+                    <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-6 py-2 rounded-bl-3xl uppercase tracking-tighter">
+                      ⭐ Most Popular
+                    </div>
+                  )}
+                  <div className="mb-8">
+                    <h3 className="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">{pkg.name}</h3>
+                    <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                  </div>
+                  <div className="mb-8">
+                    <span className="text-4xl font-bold text-primary">৳{pkg.price}</span>
+                    <span className="text-muted-foreground text-sm ml-1">/ project</span>
+                  </div>
+                  <ul className="space-y-4 mb-8 flex-1">
+                    {pkg.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-3 text-sm">
+                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                          <Check className="w-3 h-3" />
+                        </div>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button onClick={() => handleOrder(pkg)} className={`w-full rounded-2xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`}>
+                    Order Now
+                  </Button>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Website Development Packages Section */}
+        <section className="py-24 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16 space-y-4">
+              <Badge variant="outline" className="px-4 py-1 text-primary">Web Development</Badge>
               <h1 className="text-5xl font-headline font-bold">Choose Your Package</h1>
               <p className="text-muted-foreground">Affordable design solutions for every budget.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {data.packages.map((pkg) => (
+              {websitePackages.map((pkg) => (
                 <Card key={pkg.id} className={`relative p-8 rounded-[2rem] border-border/50 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10' : ''}`}>
                   {pkg.isPopular && (
                     <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-6 py-2 rounded-bl-3xl uppercase tracking-tighter">
@@ -82,7 +129,7 @@ export default function ServicesPage() {
         </section>
 
         {/* Domain + Hosting Section */}
-        <section className="py-24 bg-[#0a2e1a] text-white relative overflow-hidden rounded-[4rem] mx-6">
+        <section className="py-24 bg-[#0a2e1a] text-white relative overflow-hidden rounded-[4rem] mx-6 mt-24">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/20 blur-[150px] rounded-full translate-y-1/2 -translate-x-1/2" />
           
