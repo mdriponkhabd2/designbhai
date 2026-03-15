@@ -112,7 +112,7 @@ export default function LandingPage() {
                   fill 
                   className="object-cover"
                   priority
-                  unoptimized={data.settings.heroImageUrl.startsWith('https://scontent')}
+                  unoptimized={data.settings.heroImageUrl.startsWith('https://')}
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -155,7 +155,6 @@ export default function LandingPage() {
       <section className="py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
-            <Badge variant="secondary" className="px-4 py-1 text-primary">Pricing Plans</Badge>
             <h2 className="text-4xl font-headline font-bold">Choose Your Package</h2>
             <p className="text-muted-foreground">Affordable design solutions for every budget.</p>
           </div>
@@ -165,11 +164,11 @@ export default function LandingPage() {
               <Card key={pkg.id} className={`relative p-8 rounded-3xl border-border/50 shadow-sm overflow-hidden flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10' : ''}`}>
                 {pkg.isPopular && (
                   <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-4 py-1 rounded-bl-xl uppercase tracking-tighter">
-                    Most Popular
+                    ⭐ Most Popular
                   </div>
                 )}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
+                  <h3 className="text-2xl font-bold mb-2">{pkg.name}</h3>
                   <p className="text-sm text-muted-foreground">{pkg.description}</p>
                 </div>
                 <div className="mb-8">
@@ -249,7 +248,7 @@ export default function LandingPage() {
                 alt="About DesignBhai" 
                 fill 
                 className="object-cover"
-                unoptimized={data.about.imageUrl.startsWith('https://scontent')}
+                unoptimized={data.about.imageUrl.startsWith('https://')}
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">

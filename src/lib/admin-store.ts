@@ -52,7 +52,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v4';
+const STORAGE_KEY = 'designbhai_admin_data_v5';
 
 const DEFAULT_DATA = {
   portfolio: [
