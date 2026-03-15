@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
-  Image as ImageIcon, 
+  ImageIcon, 
   Briefcase, 
   User, 
   Phone, 
@@ -14,7 +14,8 @@ import {
   ChevronRight,
   MessageSquareText,
   CreditCard,
-  ShoppingBag
+  ShoppingBag,
+  Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const navItems = [
   { name: "Portfolio", icon: ImageIcon, href: "/admin/portfolio" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
   { name: "Pricing & Hosting", icon: CreditCard, href: "/admin/pricing" },
+  { name: "Reviews", icon: Star, href: "/admin/reviews" },
   { name: "About Us", icon: User, href: "/admin/about" },
   { name: "Contact", icon: Phone, href: "/admin/contact" },
   { name: "Settings", icon: Settings, href: "/admin/settings" },

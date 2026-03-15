@@ -44,6 +44,14 @@ export interface TeamMember {
   imageUrl: string;
 }
 
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  text: string;
+  rating: number;
+}
+
 export interface AboutData {
   text: string;
   imageUrl: string;
@@ -60,9 +68,14 @@ export interface WebsiteSettings {
   title: string;
   favicon: string;
   heroImageUrl: string;
+  stats: {
+    completed: string;
+    happyClients: string;
+    pending: string;
+  };
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v11';
+const STORAGE_KEY = 'designbhai_admin_data_v12';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -190,6 +203,11 @@ const DEFAULT_DATA = {
       orderLink: '#'
     }
   ],
+  testimonials: [
+    { id: 'r1', name: 'Karim Ullah', role: 'E-commerce Owner', text: 'DesignBhai-r logo design package amar business-er porichiti bodle diyeche. Khub sundor kaz!', rating: 5 },
+    { id: 'r2', name: 'Jannat Ara', role: 'Blogger', text: 'Web hosting khub fast ebong support team khub help-ful. 100% recommended.', rating: 5 },
+    { id: 'r3', name: 'Sumon Ahmed', role: 'Startup Founder', text: 'Website development package-ti amar budget-er moddhei khub premium ekta site diyeche.', rating: 5 },
+  ],
   about: {
     text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh. We believe every pixel tells a story, and we are here to help you tell yours effectively.',
     imageUrl: 'https://picsum.photos/seed/studio/800/600',
@@ -207,7 +225,12 @@ const DEFAULT_DATA = {
   settings: {
     title: 'DesignBhai | Creative Studio',
     favicon: '/favicon.ico',
-    heroImageUrl: 'https://picsum.photos/seed/design-hero/800/1000'
+    heroImageUrl: 'https://picsum.photos/seed/design-hero/800/1000',
+    stats: {
+      completed: '500+',
+      happyClients: '200+',
+      pending: '15'
+    }
   }
 };
 
@@ -237,6 +260,7 @@ export function useAdminData() {
           },
           packages: parsed.packages || DEFAULT_DATA.packages,
           hostingPackages: parsed.hostingPackages || DEFAULT_DATA.hostingPackages,
+          testimonials: parsed.testimonials || DEFAULT_DATA.testimonials,
         });
       } catch (e) {
         console.error("Failed to parse stored data", e);

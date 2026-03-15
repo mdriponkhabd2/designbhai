@@ -3,30 +3,49 @@
 
 import { useAdminData } from "@/lib/admin-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ImageIcon, Briefcase, Phone, Settings as SettingsIcon, MousePointer2 } from "lucide-react";
+import { ImageIcon, Briefcase, Phone, Settings as SettingsIcon, MousePointer2, CheckCircle, Clock, Users } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Save } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
-  const { data, isLoaded } = useAdminData();
+  const { data, saveData, isLoaded } = useAdminData();
 
   if (!isLoaded) return null;
 
-  const stats = [
+  const handleStatsChange = (field: string, value: string) => {
+    saveData({
+      ...data,
+      settings: {
+        ...data.settings,
+        stats: {
+          ...data.settings.stats,
+          [field]: value
+        }
+      }
+    });
+    toast({ title: "Stats updated", description: "Publicly visible numbers have been refreshed." });
+  };
+
+  const statsCards = [
     { title: "Portfolio Items", value: data.portfolio.length, icon: ImageIcon, color: "text-blue-500", bg: "bg-blue-50" },
     { title: "Active Services", value: data.services.length, icon: Briefcase, color: "text-green-500", bg: "bg-green-50" },
-    { title: "Contact Points", value: data.contact.phones.length + 1, icon: Phone, color: "text-purple-500", bg: "bg-purple-50" },
-    { title: "App Visitors", value: "1,284", icon: MousePointer2, color: "text-orange-500", bg: "bg-orange-50" },
+    { title: "Customer Reviews", value: data.testimonials.length, icon: Users, color: "text-purple-500", bg: "bg-purple-50" },
+    { title: "Total Packages", value: data.packages.length + data.hostingPackages.length, icon: MousePointer2, color: "text-orange-500", bg: "bg-orange-50" },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-10">
       <div>
         <h1 className="text-3xl font-headline font-bold">Dashboard Overview</h1>
         <p className="text-muted-foreground mt-1 text-lg">Quick summary of DesignBhai website content.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
+        {statsCards.map((stat) => (
           <Card key={stat.title} className="border-border/60 hover:shadow-md transition-shadow">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
@@ -44,39 +63,49 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Live Counters Management */}
         <Card className="border-border/60">
           <CardHeader>
-            <CardTitle>Content Health</CardTitle>
-            <CardDescription>Status of your website sections completion.</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              Live Success Counters
+            </CardTitle>
+            <CardDescription>These numbers are visible to customers on the home page.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>About Us Section</span>
-                <span className="font-semibold">90%</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider">Completed Projects</Label>
+                <Input 
+                  defaultValue={data.settings.stats.completed} 
+                  onBlur={(e) => handleStatsChange('completed', e.target.value)}
+                  placeholder="e.g. 500+"
+                />
               </div>
-              <Progress value={90} className="h-2" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Portfolio Gallery</span>
-                <span className="font-semibold">75%</span>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider">Happy Clients</Label>
+                <Input 
+                  defaultValue={data.settings.stats.happyClients} 
+                  onBlur={(e) => handleStatsChange('happyClients', e.target.value)}
+                  placeholder="e.g. 200+"
+                />
               </div>
-              <Progress value={75} className="h-2" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Services Definitions</span>
-                <span className="font-semibold">100%</span>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider">Active Orders</Label>
+                <Input 
+                  defaultValue={data.settings.stats.pending} 
+                  onBlur={(e) => handleStatsChange('pending', e.target.value)}
+                  placeholder="e.g. 15"
+                />
               </div>
-              <Progress value={100} className="h-2" />
             </div>
+            <p className="text-[10px] text-muted-foreground italic">Changes are saved automatically when you click outside the box.</p>
           </CardContent>
         </Card>
 
         <Card className="border-border/60">
           <CardHeader>
-            <CardTitle>Global Settings</CardTitle>
+            <CardTitle>Global Site Identity</CardTitle>
             <CardDescription>Basic site configuration summary.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -94,8 +123,8 @@ export default function DashboardPage() {
                 <ImageIcon className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-semibold">Favicon</p>
-                <p className="text-xs text-muted-foreground">{data.settings.favicon}</p>
+                <p className="text-sm font-semibold">Hero Status</p>
+                <p className="text-xs text-muted-foreground">{data.settings.heroImageUrl ? "Custom Image Active" : "Default Active"}</p>
               </div>
             </div>
           </CardContent>
