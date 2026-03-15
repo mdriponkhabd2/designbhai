@@ -200,44 +200,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials Carousel Section */}
-      <section className="py-24 bg-muted/20">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <Badge variant="secondary" className="px-4 py-1 text-primary mb-4">Testimonials</Badge>
-          <h2 className="text-4xl font-headline font-bold mb-16">What Our Customers Say</h2>
-          
-          <Carousel 
-            plugins={[Autoplay({ delay: 3000 })]}
-            className="w-full max-w-4xl mx-auto"
-          >
-            <CarouselContent>
-              {data.testimonials.map((testimonial) => (
-                <CarouselItem key={testimonial.id}>
-                  <Card className="border-none bg-transparent shadow-none">
-                    <CardContent className="space-y-6">
-                      <div className="flex justify-center gap-1 text-yellow-500">
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 fill-current" />
-                        ))}
-                      </div>
-                      <p className="text-2xl font-medium italic text-muted-foreground leading-relaxed">
-                        "{testimonial.text}"
-                      </p>
-                      <div>
-                        <h4 className="text-xl font-bold text-foreground">{testimonial.name}</h4>
-                        <p className="text-sm text-primary font-medium">{testimonial.role}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
-      </section>
-
       {/* Website Development Packages Section */}
-      <section className="py-24">
+      <section className="py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-4xl font-headline font-bold">Choose Your Package</h2>
@@ -459,6 +423,42 @@ export default function LandingPage() {
               </form>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Carousel Section (Moved to Bottom) */}
+      <section className="py-24 bg-muted/20 border-t border-border/50">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <Badge variant="secondary" className="px-4 py-1 text-primary mb-4">Testimonials</Badge>
+          <h2 className="text-4xl font-headline font-bold mb-16">What Our Customers Say</h2>
+          
+          <Carousel 
+            plugins={[Autoplay({ delay: 3000 })]}
+            className="w-full max-w-4xl mx-auto"
+          >
+            <CarouselContent>
+              {data.testimonials.map((testimonial) => (
+                <CarouselItem key={testimonial.id}>
+                  <Card className="border-none bg-transparent shadow-none">
+                    <CardContent className="space-y-6">
+                      <div className="flex justify-center gap-1 text-yellow-500">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 fill-current" />
+                        ))}
+                      </div>
+                      <p className="text-2xl font-medium italic text-muted-foreground leading-relaxed">
+                        "{testimonial.text}"
+                      </p>
+                      <div>
+                        <h4 className="text-xl font-bold text-foreground">{testimonial.name}</h4>
+                        <p className="text-sm text-primary font-medium">{testimonial.role}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </section>
 
