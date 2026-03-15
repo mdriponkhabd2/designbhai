@@ -72,27 +72,53 @@ const DEFAULT_DATA = {
   packages: [
     { 
       id: 'p1', 
-      name: 'Basic Plan', 
-      price: '1,500', 
-      description: 'Perfect for startups and individuals.', 
-      features: ['Logo Design (2 concepts)', 'Business Card', '3 Revisions', 'High Res Files'],
+      name: '🟢 Starter Package', 
+      price: '2,999', 
+      description: 'Perfect for individuals and small businesses starting online.', 
+      features: [
+        '1 Professional Landing Page', 
+        '1 Website Setup', 
+        '5GB Monthly Hosting', 
+        'Free Domain (.com / .shop)', 
+        'Mobile Responsive Design', 
+        'Basic Support', 
+        '🚀 Best for beginners.'
+      ],
       orderLink: '#'
     },
     { 
       id: 'p2', 
-      name: 'Standard Plan', 
-      price: '3,500', 
-      description: 'Best for growing businesses.', 
-      features: ['Logo Design (4 concepts)', 'Social Media Kit', 'Stationery Design', 'Unlimited Revisions'],
+      name: '🔵 Business Package', 
+      price: '5,999', 
+      description: 'Ideal for growing businesses that need a professional online presence.', 
+      features: [
+        'Premium Landing Page Design', 
+        '1 Complete Website', 
+        '5GB Fast Hosting (Monthly)', 
+        'Free Domain (.com / .shop)', 
+        'Fully Mobile Responsive', 
+        'SEO Friendly Setup', 
+        'Priority Support', 
+        '⭐ Perfect for business owners.'
+      ],
       orderLink: '#',
       isPopular: true
     },
     { 
       id: 'p3', 
-      name: 'Premium Plan', 
-      price: '7,000', 
-      description: 'Full branding for enterprises.', 
-      features: ['Full Brand Identity', 'Website UI/UX', 'Brand Guidelines', 'Source Files Included'],
+      name: '🟣 Premium Package', 
+      price: '9,999', 
+      description: 'Best for brands who want a high-quality and optimized website.', 
+      features: [
+        'High Converting Landing Page', 
+        'Professional Business Website', 
+        '5GB High Speed Hosting (Monthly)', 
+        'Free Domain (.com / .shop)', 
+        'Advanced UI Design', 
+        'SEO Optimization', 
+        'Premium Support', 
+        '🔥 Complete solution for serious businesses.'
+      ],
       orderLink: '#'
     }
   ],
