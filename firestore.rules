@@ -8,63 +8,49 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Check if the user's UID exists in the admin_roles collection
       return isSignedIn() && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
     match /admin_roles/{adminUid} {
-      // Users can see their own admin status
       allow get: if isSignedIn() && request.auth.uid == adminUid;
-      // Listing admin roles is only for admins
-      allow list: if isAdmin();
-      // Admin creation should be restricted, but for this app's logic we allow it during setup
+      allow list, write: if isAdmin();
       allow create: if isSignedIn();
-      allow update, delete: if isAdmin();
     }
 
     match /website_config/{configId} {
-      // Everyone can read the website configuration
-      allow read: if true;
-      // Only admins can update the website settings
-      allow write: if isAdmin();
-    }
-
-    match /portfolioItems/{portfolioItemId} {
       allow read: if true;
       allow write: if isAdmin();
-    }
-
-    match /services/{serviceId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /contactMessages/{messageId} {
-      // Public can send messages
-      allow create: if true;
-      // Only admin can read or manage messages
-      allow read, write: if isAdmin();
     }
 
     match /orders/{orderId} {
-      // Public can place orders
+      // Create: Anyone can create, but if signed in, it must be their userId
       allow create: if true;
       
-      // Get: Admin can see any order, users can only see their own
-      allow get: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      // Get/List: Admin can see everything, Users can only see their own
+      // Important: list requires the query to filter by userId
+      allow read, list: if isAdmin() || (isSignedIn() && (resource == null || resource.data.userId == request.auth.uid));
       
-      // List: Admin can list all, users can only list their own
-      // Ensure the query on the client filters by userId
-      allow list: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.userId);
-      
-      // Only admin can update (status) or delete
       allow update, delete: if isAdmin();
     }
 
+    match /wallets/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    match /wallet_requests/{requestId} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /contactMessages/{messageId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
+    }
+    
     match /products/{productId} {
-      // Public can see products
       allow read: if true;
-      // Only admin can manage products
       allow write: if isAdmin();
     }
   }
