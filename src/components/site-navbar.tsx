@@ -41,7 +41,7 @@ export function SiteNavbar() {
       isScrolled || pathname !== "/" ? "bg-background/90 backdrop-blur-xl shadow-md py-3" : "bg-transparent"
     )}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="text-2xl font-black font-headline tracking-tighter uppercase">
+        <Link href="/" className="text-2xl font-black font-headline tracking-tighter uppercase shrink-0">
           Design<span className="text-primary">Bhai</span>
         </Link>
         
@@ -60,23 +60,23 @@ export function SiteNavbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {user ? (
-            <Button asChild variant="default" className="rounded-full px-6 font-bold shadow-lg shadow-primary/20">
+            <Button asChild variant="default" className="rounded-full px-4 sm:px-6 font-bold shadow-lg shadow-primary/20">
               <Link href="/dashboard" className="gap-2">
                 <LayoutDashboard className="w-4 h-4" /> Dashboard
               </Link>
             </Button>
           ) : (
             <>
-              <Button asChild variant="ghost" className="hidden sm:flex rounded-full font-bold hover:text-primary">
+              <Button asChild variant="ghost" className="rounded-full font-bold hover:text-primary px-3 sm:px-4">
                 <Link href="/login" className="gap-2">
-                  <LogIn className="w-4 h-4" /> Login
+                  <LogIn className="w-4 h-4" /> <span className="hidden xs:inline">Login</span>
                 </Link>
               </Button>
-              <Button asChild className="rounded-full px-6 font-bold shadow-lg shadow-primary/20">
+              <Button asChild className="rounded-full px-4 sm:px-6 font-bold shadow-lg shadow-primary/20">
                 <Link href="/signup" className="gap-2">
-                  <UserPlus className="w-4 h-4" /> Sign Up
+                  <UserPlus className="w-4 h-4" /> <span className="hidden xs:inline">Sign Up</span>
                 </Link>
               </Button>
             </>

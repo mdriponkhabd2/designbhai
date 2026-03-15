@@ -1,13 +1,14 @@
 
 "use client";
 
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useCollection, useMemoFirebase, useAuth } from "@/firebase";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { collection, query, where, orderBy } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { 
   ShoppingBag, 
   Package, 
@@ -17,18 +18,24 @@ import {
   Mail,
   Calendar,
   ExternalLink,
-  Clock
+  Clock,
+  LogOut,
+  Wallet
 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAdminData } from "@/lib/admin-store";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 export default function UserDashboard() {
   const { user, isUserLoading } = useUser();
   const { data: adminData } = useAdminData();
+  const auth = useAuth();
   const db = useFirestore();
+  const router = useRouter();
 
   // Optimized query aligned with security rules
   const ordersQuery = useMemoFirebase(() => {
@@ -41,6 +48,16 @@ export default function UserDashboard() {
   }, [user, db]);
 
   const { data: orders, isLoading: isOrdersLoading } = useCollection(ordersQuery);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({ title: "Logged out", description: "You have been successfully logged out." });
+      router.push("/");
+    } catch (error) {
+      toast({ variant: "destructive", title: "Logout failed" });
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -96,7 +113,7 @@ export default function UserDashboard() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button asChild className="rounded-xl gap-2 shadow-lg shadow-primary/10">
                 <Link href="/services">Order New Service</Link>
               </Button>
@@ -108,13 +125,19 @@ export default function UserDashboard() {
                   <MessageCircle className="w-4 h-4 text-[#25D366]" /> Live Support
                 </Link>
               </Button>
+              <Button variant="ghost" onClick={handleLogout} className="rounded-xl gap-2 text-destructive hover:bg-destructive/10">
+                <LogOut className="w-4 h-4" /> Logout
+              </Button>
             </div>
           </div>
 
           <Tabs defaultValue="orders" className="space-y-8">
-            <TabsList className="bg-white p-1 rounded-2xl border border-border/40 h-auto flex shadow-sm w-fit">
+            <TabsList className="bg-white p-1 rounded-2xl border border-border/40 h-auto flex shadow-sm w-fit flex-wrap">
               <TabsTrigger value="orders" className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2 font-bold">
                 <ShoppingBag className="w-4 h-4" /> My Orders
+              </TabsTrigger>
+              <TabsTrigger value="add-money" className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2 font-bold">
+                <Wallet className="w-4 h-4" /> Add Money
               </TabsTrigger>
               <TabsTrigger value="profile" className="rounded-xl px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white gap-2 font-bold">
                 <UserIcon className="w-4 h-4" /> Profile Info
@@ -185,6 +208,33 @@ export default function UserDashboard() {
                   <Button className="mt-8 rounded-xl px-12 h-12 font-bold shadow-lg" asChild><Link href="/services">Browse Services</Link></Button>
                 </div>
               )}
+            </TabsContent>
+
+            <TabsContent value="add-money">
+              <Card className="rounded-[2.5rem] border-none shadow-sm p-10 bg-white max-w-2xl">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <Wallet className="w-6 h-6 text-primary" /> Add Money to Wallet
+                </h3>
+                <div className="space-y-8">
+                  <div className="green-gradient p-8 rounded-3xl text-white shadow-xl shadow-primary/20">
+                    <p className="text-sm font-bold uppercase tracking-widest mb-2 opacity-80">Payment Instructions</p>
+                    <p className="text-lg mb-4 leading-relaxed">Please send money via <b>bKash</b> or <b>Nagad</b> (Send Money) to the number below:</p>
+                    <div className="bg-white/20 p-6 rounded-2xl flex items-center justify-between">
+                      <span className="text-3xl font-black font-mono tracking-tighter">01837679963</span>
+                      <Badge className="bg-white text-primary font-bold">Personal</Badge>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <p className="text-muted-foreground italic text-sm">After payment, please message us on WhatsApp with your Transaction ID (TrxID) and Email Address to update your wallet balance.</p>
+                    <Button asChild size="lg" className="w-full rounded-2xl h-14 font-bold gap-3 shadow-lg">
+                      <Link href={`https://wa.me/8801837679963?text=Hello, I want to add money to my wallet for account: ${user.email}`}>
+                        <MessageCircle className="w-6 h-6" /> Message on WhatsApp
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
             </TabsContent>
 
             <TabsContent value="profile">
