@@ -85,7 +85,7 @@ export default function UserDashboard() {
       setAddAmount("");
       setTrxId("");
     } catch (error) {
-      // Error is handled by global listener
+      // Error handled by global listener
     } finally {
       setIsSubmitting(false);
     }
