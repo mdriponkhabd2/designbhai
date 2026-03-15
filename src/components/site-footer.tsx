@@ -32,12 +32,13 @@ export function SiteFooter() {
           <ul className="space-y-4 text-sm text-slate-400">
             <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
             <li><Link href="/portfolio" className="hover:text-primary transition-colors">Portfolio</Link></li>
+            <li><Link href="/services" className="hover:text-primary transition-colors">Services</Link></li>
             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
             <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
           </ul>
         </div>
         <div className="space-y-6">
-          <h4 className="text-lg font-bold">Services</h4>
+          <h4 className="text-lg font-bold">Our Services</h4>
           <ul className="space-y-4 text-sm text-slate-400">
             {data.services.slice(0, 4).map(s => (
               <li key={s.id}><span className="hover:text-primary cursor-default">{s.title}</span></li>
