@@ -28,6 +28,7 @@ export interface ContactData {
 export interface WebsiteSettings {
   title: string;
   favicon: string;
+  heroImageUrl: string;
 }
 
 const STORAGE_KEY = 'designbhai_admin_data_v2';
@@ -57,7 +58,8 @@ const DEFAULT_DATA = {
   },
   settings: {
     title: 'DesignBhai | Creative Studio',
-    favicon: '/favicon.ico'
+    favicon: '/favicon.ico',
+    heroImageUrl: 'https://picsum.photos/seed/design-hero/800/1000'
   }
 };
 
@@ -69,7 +71,16 @@ export function useAdminData() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        setData(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        // Ensure new fields exist even in old stored data
+        setData({
+          ...DEFAULT_DATA,
+          ...parsed,
+          settings: {
+            ...DEFAULT_DATA.settings,
+            ...(parsed.settings || {})
+          }
+        });
       } catch (e) {
         console.error("Failed to parse stored data", e);
       }
@@ -80,7 +91,6 @@ export function useAdminData() {
   const saveData = (newData: typeof DEFAULT_DATA) => {
     setData(newData);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-    // Dispatch custom event to sync across tabs if needed
     window.dispatchEvent(new Event('storage'));
   };
 

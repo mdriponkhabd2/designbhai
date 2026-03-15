@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,25 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Globe, ShieldCheck, Palette, Save } from "lucide-react";
+import { Globe, ShieldCheck, Palette, Save, ImageIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 export default function SettingsPage() {
   const { data, saveData, isLoaded } = useAdminData();
   const [title, setTitle] = useState("");
   const [favicon, setFavicon] = useState("");
+  const [heroImageUrl, setHeroImageUrl] = useState("");
 
   useEffect(() => {
     if (isLoaded) {
       setTitle(data.settings.title);
       setFavicon(data.settings.favicon);
+      setHeroImageUrl(data.settings.heroImageUrl || "");
     }
   }, [isLoaded, data]);
 
   if (!isLoaded) return null;
 
   const handleSave = () => {
-    saveData({ ...data, settings: { title, favicon } });
+    saveData({ ...data, settings: { title, favicon, heroImageUrl } });
     toast({ title: "Settings updated", description: "Global website settings have been refreshed." });
   };
 
@@ -73,27 +75,41 @@ export default function SettingsPage() {
           <Card className="border-border/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Palette className="w-5 h-5 text-primary" />
-                Branding & Aesthetics
+                <ImageIcon className="w-5 h-5 text-primary" />
+                Hero Image Management
               </CardTitle>
-              <CardDescription>Customization options for website themes (Admin only view).</CardDescription>
+              <CardDescription>Change the main featured image on the homepage hero section.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 opacity-60">
-              <div className="p-4 rounded-lg bg-muted border border-dashed border-border flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold text-sm">Primary Color Theme</h4>
-                  <p className="text-xs text-muted-foreground">Muted Studio Green (Active)</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-primary shadow-inner border border-white/20"></div>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="hero-img">Hero Image URL</Label>
+                <Input 
+                  id="hero-img" 
+                  value={heroImageUrl} 
+                  onChange={e => setHeroImageUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                />
               </div>
-              <div className="p-4 rounded-lg bg-muted border border-dashed border-border flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold text-sm">Typography Pack</h4>
-                  <p className="text-xs text-muted-foreground">Inter Sans-Serif (Standard)</p>
+              
+              <div className="space-y-2">
+                <Label>Preview</Label>
+                <div className="relative aspect-[16/9] rounded-xl overflow-hidden border bg-muted group">
+                  {heroImageUrl ? (
+                    <Image 
+                      src={heroImageUrl} 
+                      alt="Hero Preview" 
+                      fill 
+                      className="object-cover"
+                      unoptimized={heroImageUrl.startsWith('https://scontent')}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                      <ImageIcon className="w-8 h-8 opacity-20 mb-2" />
+                      <span className="text-xs">No image URL provided</span>
+                    </div>
+                  )}
                 </div>
-                <span className="text-xs font-mono bg-white px-2 py-1 rounded border">Inter</span>
               </div>
-              <p className="text-[10px] text-center italic text-muted-foreground">Visual themes are currently locked to branding standards.</p>
             </CardContent>
           </Card>
         </div>

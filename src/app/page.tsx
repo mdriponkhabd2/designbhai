@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAdminData } from "@/lib/admin-store";
@@ -113,13 +112,20 @@ export default function LandingPage() {
           <div className="relative aspect-square lg:aspect-auto lg:h-[600px] animate-in fade-in zoom-in-95 duration-1000">
             <div className="absolute inset-0 green-gradient rounded-[2rem] rotate-3 opacity-20 blur-2xl" />
             <div className="relative h-full w-full rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl">
-              <Image 
-                src="https://picsum.photos/seed/design-hero/800/1000" 
-                alt="Creative Design" 
-                fill 
-                className="object-cover"
-                priority
-              />
+              {data.settings.heroImageUrl ? (
+                <Image 
+                  src={data.settings.heroImageUrl} 
+                  alt="Creative Design" 
+                  fill 
+                  className="object-cover"
+                  priority
+                  unoptimized={data.settings.heroImageUrl.startsWith('https://scontent')}
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <ImageIcon className="w-16 h-16 text-muted-foreground/20" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -157,6 +163,7 @@ export default function LandingPage() {
                       alt={item.title} 
                       fill 
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      unoptimized={item.imageUrl.startsWith('https://scontent')}
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -213,6 +220,7 @@ export default function LandingPage() {
                   alt="About DesignBhai" 
                   fill 
                   className="object-cover"
+                  unoptimized={data.about.imageUrl.startsWith('https://scontent')}
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
