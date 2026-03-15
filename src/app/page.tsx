@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useAdminData } from "@/lib/admin-store";
+import { useAdminData, PricingPackage, HostingPackage } from "@/lib/admin-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SiteNavbar } from "@/components/site-navbar";
 import { SiteFooter } from "@/components/site-footer";
 import { useFirestore } from "@/firebase";
@@ -42,17 +42,24 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { CheckoutModal } from "@/components/checkout-modal";
 
 export default function LandingPage() {
   const { data, isLoaded } = useAdminData();
   const db = useFirestore();
   const [formLoading, setFormLoading] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<PricingPackage | HostingPackage | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (!isLoaded) return null;
 
   const serviceIcons = [Palette, Layout, Layers, Monitor];
-  const designPackages = data.packages.filter(p => p.category === 'design' || !p.category);
   const websitePackages = data.packages.filter(p => p.category === 'website');
+
+  const handleOrder = (pkg: PricingPackage | HostingPackage) => {
+    setSelectedPkg(pkg);
+    setIsCheckoutOpen(true);
+  };
 
   async function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -234,8 +241,8 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button className={`w-full rounded-xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`} asChild>
-                  <Link href="/services">Order Now</Link>
+                <Button onClick={() => handleOrder(pkg)} className={`w-full rounded-xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`}>
+                  Order Now
                 </Button>
               </Card>
             ))}
@@ -259,8 +266,8 @@ export default function LandingPage() {
               <p className="text-slate-300 text-lg max-w-md">
                 Fast, Secure and Affordable Domain Hosting for Everyone. Launch your website with the speed and security it deserves.
               </p>
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 font-bold shadow-2xl shadow-primary/20" asChild>
-                <Link href="/services">Order Now <ArrowUpRight className="ml-2 w-4 h-4" /></Link>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 font-bold shadow-2xl shadow-primary/20" onClick={() => handleOrder(data.hostingPackages[1])}>
+                Order Now <ArrowUpRight className="ml-2 w-4 h-4" />
               </Button>
             </div>
             <div className="relative">
@@ -313,8 +320,8 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button className={`w-full rounded-xl h-12 font-bold ${pkg.isPopular ? 'bg-primary hover:bg-primary/90 text-white' : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'}`} asChild>
-                  <Link href="/services">Order Now</Link>
+                <Button onClick={() => handleOrder(pkg)} className={`w-full rounded-xl h-12 font-bold ${pkg.isPopular ? 'bg-primary hover:bg-primary/90 text-white' : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'}`}>
+                  Order Now
                 </Button>
               </Card>
             ))}
@@ -426,7 +433,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials Carousel Section (Moved to Bottom) */}
+      {/* Testimonials Carousel Section */}
       <section className="py-24 bg-muted/20 border-t border-border/50">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <Badge variant="secondary" className="px-4 py-1 text-primary mb-4">Testimonials</Badge>
@@ -463,6 +470,12 @@ export default function LandingPage() {
       </section>
 
       <SiteFooter />
+
+      <CheckoutModal 
+        isOpen={isCheckoutOpen} 
+        onClose={() => setIsCheckoutOpen(false)} 
+        pkg={selectedPkg} 
+      />
 
       <Link 
         href={`https://wa.me/${data.contact.phones[0]?.replace(/\D/g, '')}`}
