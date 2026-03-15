@@ -26,13 +26,14 @@ export interface PricingPackage {
   isPopular?: boolean;
 }
 
-export interface HostingOption {
+export interface HostingPackage {
   id: string;
   name: string;
   price: string;
   description: string;
   features: string[];
   orderLink: string;
+  isPopular?: boolean;
 }
 
 export interface AboutData {
@@ -52,7 +53,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v5';
+const STORAGE_KEY = 'designbhai_admin_data_v6';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -122,14 +123,33 @@ const DEFAULT_DATA = {
       orderLink: '#'
     }
   ],
-  hosting: {
-    id: 'h1',
-    name: 'Business Hosting',
-    price: '2,000 /yr',
-    description: 'Ultra-fast and secure hosting for your creative website.',
-    features: ['10GB SSD Storage', 'Free SSL Certificate', 'Daily Backups', '24/7 Support', 'Free Domain (.com)'],
-    orderLink: '#'
-  },
+  hostingPackages: [
+    {
+      id: 'h1',
+      name: 'Starter Hosting',
+      price: '199',
+      description: 'Fast, Secure and Affordable Domain Hosting for Everyone',
+      features: ['1 Website', '5GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain (SOHO Domain Offer)', '5 Email Accounts', 'cPanel Access', '24/7 Support'],
+      orderLink: '#'
+    },
+    {
+      id: 'h2',
+      name: 'Business Hosting',
+      price: '399',
+      description: 'Ideal for growing businesses that need a professional online presence.',
+      features: ['5 Websites', '15GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain (SOHO Domain Offer)', 'Unlimited Email Accounts', 'cPanel Access', 'Weekly Backup', '24/7 Priority Support'],
+      orderLink: '#',
+      isPopular: true
+    },
+    {
+      id: 'h3',
+      name: 'Pro Hosting',
+      price: '699',
+      description: 'Best for brands who want a high-quality and optimized website.',
+      features: ['Unlimited Websites', '50GB SSD Storage', 'Free SSL Certificate', 'Free .com Domain (SOHO Domain Offer)', 'Unlimited Email Accounts', 'cPanel Access', 'Daily Backup', 'LiteSpeed Speed Optimization', '24/7 Premium Support'],
+      orderLink: '#'
+    }
+  ],
   about: {
     text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh. We believe every pixel tells a story, and we are here to help you tell yours effectively.',
     imageUrl: 'https://picsum.photos/seed/studio/800/600'
@@ -167,7 +187,7 @@ export function useAdminData() {
             ...(parsed.settings || {})
           },
           packages: parsed.packages || DEFAULT_DATA.packages,
-          hosting: parsed.hosting || DEFAULT_DATA.hosting
+          hostingPackages: parsed.hostingPackages || DEFAULT_DATA.hostingPackages,
         });
       } catch (e) {
         console.error("Failed to parse stored data", e);
