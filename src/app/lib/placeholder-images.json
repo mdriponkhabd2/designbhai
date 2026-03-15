@@ -1,0 +1,29 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "portfolio-1",
+      "description": "Modern brand identity for a tech startup",
+      "imageUrl": "https://picsum.photos/seed/design1/600/400",
+      "imageHint": "brand design"
+    },
+    {
+      "id": "portfolio-2",
+      "description": "Minimalist logo design for a coffee shop",
+      "imageUrl": "https://picsum.photos/seed/design2/600/400",
+      "imageHint": "logo coffee"
+    },
+    {
+      "id": "portfolio-3",
+      "description": "Mobile app UI design for fitness tracking",
+      "imageUrl": "https://picsum.photos/seed/design3/600/400",
+      "imageHint": "mobile ui"
+    },
+    {
+      "id": "about-image",
+      "description": "DesignBhai Studio Team",
+      "imageUrl": "https://picsum.photos/seed/studio/800/600",
+      "imageHint": "design studio"
+    }
+  ]
+}

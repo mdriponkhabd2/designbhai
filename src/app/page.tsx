@@ -1,3 +1,19 @@
+
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Home() {
-  return <></>;
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/admin/login");
+  }, [router]);
+
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <p className="text-muted-foreground animate-pulse">Redirecting to Admin Panel...</p>
+    </div>
+  );
 }
