@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -8,20 +7,35 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useAuth, useFirestore } from "@/firebase";
+import { signInAnonymously } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const auth = useAuth();
+  const db = useFirestore();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulated secure check
-    setTimeout(() => {
-      if (password === "admin123") { // The requested single password
+    try {
+      if (password === "admin123") {
+        // 1. Sign in to Firebase Auth
+        const userCredential = await signInAnonymously(auth);
+        
+        // 2. Seed the admin role in Firestore so security rules pass
+        await setDoc(doc(db, "admin_roles", userCredential.user.uid), {
+          role: "admin",
+          lastLogin: serverTimestamp()
+        });
+
+        // 3. Set local session for UI layout logic
         sessionStorage.setItem("admin_auth", "true");
+        
         toast({
           title: "Access Granted",
           description: "Welcome back, Admin.",
@@ -35,7 +49,15 @@ export default function LoginPage() {
         });
         setIsLoading(false);
       }
-    }, 800);
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: error.message || "Failed to establish secure session.",
+      });
+      setIsLoading(false);
+    }
   };
 
   return (

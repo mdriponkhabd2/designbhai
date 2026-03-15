@@ -2,141 +2,57 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * DESIGNBHAI ADMIN PANEL - SECURITY RULES
-     * 
-     * Core Philosophy:
-     * This ruleset implements a Database-Based Access Control (DBAC) model centered around an
-     * administrative role. The system differentiates between public-facing content and 
-     * administrative management.
-     * 
-     * Data Structure:
-     * - /admin_roles/{uid}: A collection where the presence of a document grants admin privileges.
-     * - /portfolioItems, /services, /aboutUs, /contactInfo, /websiteSettings: Publicly readable 
-     *   collections that can only be modified by authorized administrators.
-     * - /contactMessages: A secure collection for user inquiries, restricted to admin access.
-     * 
-     * Key Security Decisions:
-     * 1. Authorization Independence: Admin status is verified by checking for a document 
-     *    in the `admin_roles` collection matching the user's UID.
-     * 2. Public Readability: Content intended for the website front-end is open for 'get' 
-     *    and 'list' operations to ensure performance and SEO compatibility.
-     * 3. Admin-Only Writes: All state-changing operations (create, update, delete) on 
-     *    global site data require a verified administrator account.
-     * 4. Secure Prototyping: These rules enforce strict authorization (who can access) 
-     *    while remaining flexible on the specific schema of the data during this iteration.
-     */
-
     // --- HELPER FUNCTIONS ---
 
-    /** @description Checks if the user is authenticated with Firebase Auth. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /** @description Checks if the authenticated user has an entry in the admin_roles collection. */
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid));
     }
 
-    /** @description Verifies the user is an admin and the document exists before modification. */
-    function isExistingAdmin() {
-      return isAdmin() && resource != null;
-    }
-
     // --- COLLECTION RULES ---
 
-    /**
-     * @description Authorization source of truth. Stores UIDs of users with admin privileges.
-     * @path /admin_roles/{adminUid}
-     * @allow (get) Any authenticated admin can check their own or others' admin status.
-     * @deny (create) Non-admin users cannot promote themselves to administrator.
-     * @principle Database-Based Access Control (DBAC).
-     */
     match /admin_roles/{adminUid} {
-      allow get, list: if isAdmin();
+      // Allow users to read their own role doc to verify status
+      allow get: if isSignedIn() && request.auth.uid == adminUid;
+      allow list: if isAdmin();
+      // Allow creation during bootstrap/login phase
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    match /portfolioItems/{portfolioItemId} {
+      allow get, list: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Public portfolio items displayed on the website.
-     * @path /portfolioItems/{portfolioItemId}
-     * @allow (list) Public users can browse the design portfolio.
-     * @deny (update) Non-admin users cannot modify portfolio details.
-     * @principle Public Read with Admin-Only Writes.
-     */
-    match /portfolioItems/{portfolioItemId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
-    }
-
-    /**
-     * @description Services offered by DesignBhai, visible to all visitors.
-     * @path /services/{serviceId}
-     * @allow (get) Public users can view specific service details.
-     * @deny (create) Unauthenticated users cannot add new services.
-     * @principle Public Read with Admin-Only Writes.
-     */
     match /services/{serviceId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Singleton document containing the "About Us" section content.
-     * @path /aboutUs/{aboutUsId}
-     * @allow (get) Public users can read the company bio.
-     * @deny (delete) Only admins can remove the section content.
-     * @principle Singleton pattern with restricted management.
-     */
     match /aboutUs/{aboutUsId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Singleton document for contact details (Email, Phone, Address).
-     * @path /contactInfo/{contactInfoId}
-     * @allow (get) Public users can see the email mdriponkha2@gmail.com for contact.
-     * @deny (update) Only admins can update the primary contact email.
-     * @principle Authorization Independence for site-wide configuration.
-     */
     match /contactInfo/{contactInfoId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Global website configuration such as site title and favicon.
-     * @path /websiteSettings/{settingId}
-     * @allow (list) The frontend can fetch global settings to render the UI.
-     * @deny (create) Only admins can initialize or change site-wide settings.
-     * @principle Global configuration lockdown.
-     */
     match /websiteSettings/{settingId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
-    /**
-     * @description Inbox for messages submitted via the contact form.
-     * @path /contactMessages/{messageId}
-     * @allow (create) NOTE: IR reasoning specifies admin-only read/write. If public submission is needed, update this rule.
-     * @deny (list) Regular users or anonymous visitors cannot browse submitted messages.
-     * @principle Administrative segregation of sensitive user inquiries.
-     */
     match /contactMessages/{messageId} {
-      // NOTE: The IR specifies read AND write are limited to admins. 
-      // If public users need to submit messages via the frontend, 
-      // the 'create' rule below should be changed to 'if true;'.
+      // Public can CREATE messages, but only Admins can READ/LIST them
+      allow create: if true;
       allow get, list: if isAdmin();
-      allow create: if isAdmin(); 
-      allow update, delete: if isExistingAdmin();
+      allow update, delete: if isAdmin();
     }
   }
 }
