@@ -24,6 +24,24 @@
       "description": "DesignBhai Studio Team",
       "imageUrl": "https://picsum.photos/seed/studio/800/600",
       "imageHint": "design studio"
+    },
+    {
+      "id": "team-1",
+      "description": "Ripon Kha - Graphics Designer",
+      "imageUrl": "https://picsum.photos/seed/team1/400/400",
+      "imageHint": "designer person"
+    },
+    {
+      "id": "team-2",
+      "description": "Web Designer",
+      "imageUrl": "https://picsum.photos/seed/team2/400/400",
+      "imageHint": "web developer person"
+    },
+    {
+      "id": "team-3",
+      "description": "Digital Marketer",
+      "imageUrl": "https://picsum.photos/seed/team3/400/400",
+      "imageHint": "marketing person"
     }
   ]
 }

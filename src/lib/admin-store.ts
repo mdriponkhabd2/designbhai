@@ -37,9 +37,17 @@ export interface HostingPackage {
   isPopular?: boolean;
 }
 
+export interface TeamMember {
+  id: string;
+  name: string;
+  designation: string;
+  imageUrl: string;
+}
+
 export interface AboutData {
   text: string;
   imageUrl: string;
+  team: TeamMember[];
 }
 
 export interface ContactData {
@@ -54,7 +62,7 @@ export interface WebsiteSettings {
   heroImageUrl: string;
 }
 
-const STORAGE_KEY = 'designbhai_admin_data_v10';
+const STORAGE_KEY = 'designbhai_admin_data_v11';
 
 const DEFAULT_DATA = {
   portfolio: [
@@ -72,7 +80,6 @@ const DEFAULT_DATA = {
     { id: '4', title: 'Branding', description: 'Complete brand strategies including typography, colors, and design guidelines.' },
   ],
   packages: [
-    // Social Media Design Packages
     { 
       id: 'd1', 
       name: 'Basic Package', 
@@ -101,7 +108,6 @@ const DEFAULT_DATA = {
       features: ['40 Social Media Post Designs', '10 Banner Designs', '10 Story Designs', 'Custom Design Requests', 'Unlimited Revisions', 'Priority Delivery'],
       orderLink: '#'
     },
-    // Website Development Packages
     { 
       id: 'w1', 
       name: '🟢 Starter Package', 
@@ -186,7 +192,12 @@ const DEFAULT_DATA = {
   ],
   about: {
     text: 'DesignBhai is a premier graphics design studio dedicated to bringing your creative visions to life. With years of experience and a passion for aesthetic excellence, we serve clients globally from our studio in Bangladesh. We believe every pixel tells a story, and we are here to help you tell yours effectively.',
-    imageUrl: 'https://picsum.photos/seed/studio/800/600'
+    imageUrl: 'https://picsum.photos/seed/studio/800/600',
+    team: [
+      { id: 't1', name: 'Ripon Kha', designation: 'Graphics Designer', imageUrl: 'https://picsum.photos/seed/team1/400/400' },
+      { id: 't2', name: 'Member Two', designation: 'Web Designer', imageUrl: 'https://picsum.photos/seed/team2/400/400' },
+      { id: 't3', name: 'Member Three', designation: 'Digital Marketing', imageUrl: 'https://picsum.photos/seed/team3/400/400' },
+    ]
   },
   contact: {
     address: 'Sadaynagaor, Austagram, Kishoregonj',
@@ -219,6 +230,10 @@ export function useAdminData() {
           settings: {
             ...DEFAULT_DATA.settings,
             ...(parsed.settings || {})
+          },
+          about: {
+            ...DEFAULT_DATA.about,
+            ...(parsed.about || {})
           },
           packages: parsed.packages || DEFAULT_DATA.packages,
           hostingPackages: parsed.hostingPackages || DEFAULT_DATA.hostingPackages,
