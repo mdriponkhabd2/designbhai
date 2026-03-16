@@ -21,11 +21,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { CheckoutModal } from "@/components/checkout-modal";
 
 export default function ServicesPage() {
-  const { data, isLoaded } = useAdminData();
+  const { data } = useAdminData();
   const [selectedPkg, setSelectedPkg] = useState<PricingPackage | HostingPackage | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-
-  if (!isLoaded) return null;
 
   const handleOrder = (pkg: any) => {
     setSelectedPkg(pkg);

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useFirestore, useDoc } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useMemo } from 'react';
 
@@ -216,17 +216,14 @@ const DEFAULT_DATA = {
 export function useAdminData() {
   const db = useFirestore();
   
-  // Memoize the doc reference to prevent infinite re-renders
-  const configRef = useMemo(() => {
-    const ref = doc(db, "website_config", "main");
-    // Internal Studio hint for memoization tracking
-    (ref as any).__memo = true;
-    return ref;
+  const configRef = useMemoFirebase(() => {
+    return doc(db, "website_config", "main");
   }, [db]);
 
   const { data: firestoreData, isLoading } = useDoc(configRef);
 
   const data = useMemo(() => {
+    // If we have firestoreData, merge it with defaults for missing fields
     if (!firestoreData) return DEFAULT_DATA;
     return {
       ...DEFAULT_DATA,
@@ -238,7 +235,6 @@ export function useAdminData() {
   }, [firestoreData]);
 
   const saveData = (newData: typeof DEFAULT_DATA) => {
-    // Non-blocking update to Firestore
     setDoc(doc(db, "website_config", "main"), newData);
   };
 

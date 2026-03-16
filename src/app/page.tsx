@@ -45,13 +45,11 @@ import Autoplay from "embla-carousel-autoplay";
 import { CheckoutModal } from "@/components/checkout-modal";
 
 export default function LandingPage() {
-  const { data, isLoaded } = useAdminData();
+  const { data } = useAdminData();
   const db = useFirestore();
   const [formLoading, setFormLoading] = useState(false);
   const [selectedPkg, setSelectedPkg] = useState<PricingPackage | HostingPackage | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-
-  if (!isLoaded) return null;
 
   const serviceIcons = [Palette, Layout, Layers, Monitor];
   const websitePackages = data.packages.filter(p => p.category === 'website');
