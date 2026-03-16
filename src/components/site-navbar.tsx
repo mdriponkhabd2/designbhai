@@ -12,7 +12,7 @@ import { ShoppingBag } from "lucide-react";
 export function SiteNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const { data, isLoaded } = useAdminData();
+  const { isLoaded } = useAdminData();
 
   useEffect(() => {
     const handleScroll = () => {

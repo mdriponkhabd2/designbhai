@@ -23,7 +23,6 @@ import {
   Server,
   Zap,
   ShieldCheck,
-  Clock,
   ArrowUpRight,
   Star,
   Users,
@@ -51,6 +50,7 @@ export default function LandingPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const serviceIcons = [Palette, Layout, Layers, Monitor];
+  const designPackages = data.packages.filter(p => p.category === 'design' || !p.category);
   const websitePackages = data.packages.filter(p => p.category === 'website');
 
   const handleOrder = (pkg: PricingPackage | HostingPackage) => {
@@ -176,51 +176,25 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Expert Services Section */}
-      <section className="py-24">
+      {/* Social Media Design Packages Section */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl font-headline font-bold">Expert Services</h2>
-            <p className="text-muted-foreground">Comprehensive design solutions tailored to your business needs.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {data.services.map((service, idx) => {
-              const Icon = serviceIcons[idx % serviceIcons.length];
-              return (
-                <Card key={service.id} className="p-8 rounded-3xl border-border/50 hover:border-primary/30 transition-colors shadow-sm text-center space-y-6">
-                  <div className="w-16 h-16 green-gradient rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-primary/20">
-                    <Icon className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-xl font-bold">{service.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {service.description}
-                  </p>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Website Development Packages Section */}
-      <section className="py-24 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl font-headline font-bold">Choose Your Package</h2>
-            <p className="text-muted-foreground">Affordable website development solutions for every budget.</p>
+            <Badge variant="outline" className="px-4 py-1 text-primary">Design Plans</Badge>
+            <h2 className="text-4xl font-headline font-bold">Social Media Design Packages</h2>
+            <p className="text-muted-foreground">Professional designs for your brand's social presence.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {websitePackages.map((pkg) => (
-              <Card key={pkg.id} className={`relative p-8 rounded-3xl border-border/50 shadow-sm overflow-hidden flex flex-col ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10 bg-white' : ''}`}>
+            {designPackages.map((pkg) => (
+              <Card key={pkg.id} className={`relative p-8 rounded-[2rem] border-border/50 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10 bg-white' : ''}`}>
                 {pkg.isPopular && (
-                  <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-4 py-1 rounded-bl-xl uppercase tracking-tighter">
+                  <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-6 py-2 rounded-bl-3xl uppercase tracking-tighter">
                     ⭐ Most Popular
                   </div>
                 )}
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold mb-2">{pkg.name}</h3>
+                  <h3 className="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">{pkg.name}</h3>
                   <p className="text-sm text-muted-foreground">{pkg.description}</p>
                 </div>
                 <div className="mb-8">
@@ -237,7 +211,51 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button onClick={() => handleOrder(pkg)} className={`w-full rounded-xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`}>
+                <Button onClick={() => handleOrder(pkg)} className={`w-full rounded-2xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`}>
+                  Order Now
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Website Development Packages Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16 space-y-4">
+            <Badge variant="outline" className="px-4 py-1 text-primary">Web Development</Badge>
+            <h2 className="text-4xl font-headline font-bold">Choose Your Package</h2>
+            <p className="text-muted-foreground">Affordable website development solutions for every budget.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {websitePackages.map((pkg) => (
+              <Card key={pkg.id} className={`relative p-8 rounded-[2rem] border-border/50 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group ${pkg.isPopular ? 'border-primary ring-2 ring-primary/20 scale-105 z-10 bg-white' : ''}`}>
+                {pkg.isPopular && (
+                  <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-6 py-2 rounded-bl-3xl uppercase tracking-tighter">
+                    ⭐ Most Popular
+                  </div>
+                )}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">{pkg.name}</h3>
+                  <p className="text-sm text-muted-foreground">{pkg.description}</p>
+                </div>
+                <div className="mb-8">
+                  <span className="text-4xl font-bold text-primary">৳{pkg.price}</span>
+                  <span className="text-muted-foreground text-sm ml-1">/ project</span>
+                </div>
+                <ul className="space-y-4 mb-8 flex-1">
+                  {pkg.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm">
+                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Check className="w-3 h-3" />
+                      </div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button onClick={() => handleOrder(pkg)} className={`w-full rounded-2xl h-12 font-bold ${pkg.isPopular ? 'shadow-lg shadow-primary/20' : 'variant-outline'}`}>
                   Order Now
                 </Button>
               </Card>
@@ -325,40 +343,29 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Expert Services Section */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center space-y-4 mb-16">
-            <Badge variant="outline" className="px-4 py-1 text-primary">Our Experts</Badge>
-            <h2 className="text-4xl font-headline font-bold">Meet Our Creative Team</h2>
-            <p className="text-muted-foreground">The talented individuals behind DesignBhai's success.</p>
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-4xl font-headline font-bold">Expert Services</h2>
+            <p className="text-muted-foreground">Comprehensive design solutions tailored to your business needs.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {data.about.team?.map((member) => (
-              <Card key={member.id} className="group overflow-hidden rounded-[2rem] border-border/50 hover:shadow-xl transition-all duration-500">
-                <CardContent className="p-0">
-                  <div className="relative aspect-square overflow-hidden">
-                    {member.imageUrl ? (
-                      <Image 
-                        src={member.imageUrl} 
-                        alt={member.name} 
-                        fill 
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <ImageIcon className="w-12 h-12 text-muted-foreground/20" />
-                      </div>
-                    )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {data.services.map((service, idx) => {
+              const Icon = serviceIcons[idx % serviceIcons.length];
+              return (
+                <Card key={service.id} className="p-8 rounded-3xl border-border/50 hover:border-primary/30 transition-colors shadow-sm text-center space-y-6">
+                  <div className="w-16 h-16 green-gradient rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-primary/20">
+                    <Icon className="w-8 h-8" />
                   </div>
-                  <div className="p-6 text-center">
-                    <h3 className="text-lg font-bold">{member.name}</h3>
-                    <p className="text-xs text-primary font-bold uppercase tracking-widest mt-1">{member.designation}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  <h3 className="text-xl font-bold">{service.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {service.description}
+                  </p>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -482,3 +489,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
