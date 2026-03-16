@@ -22,7 +22,6 @@ import {
   Check,
   Server,
   Zap,
-  Globe,
   ShieldCheck,
   Clock,
   ArrowUpRight,
@@ -130,7 +129,6 @@ export default function LandingPage() {
                   fill 
                   className="object-cover"
                   priority
-                  unoptimized={data.settings.heroImageUrl.startsWith('https://')}
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -347,7 +345,6 @@ export default function LandingPage() {
                         alt={member.name} 
                         fill 
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        unoptimized={member.imageUrl.startsWith('https://')}
                       />
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center">
