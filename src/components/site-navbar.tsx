@@ -6,15 +6,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAdminData } from "@/lib/admin-store";
-import { useUser } from "@/firebase";
 import { Button } from "@/components/ui/button";
-import { User, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 
 export function SiteNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const { data, isLoaded } = useAdminData();
-  const { user } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,26 +59,11 @@ export function SiteNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {user ? (
-            <Button asChild variant="default" className="rounded-full px-4 sm:px-6 font-bold shadow-lg shadow-primary/20">
-              <Link href="/dashboard" className="gap-2">
-                <LayoutDashboard className="w-4 h-4" /> Dashboard
-              </Link>
-            </Button>
-          ) : (
-            <>
-              <Button asChild variant="ghost" className="rounded-full font-bold hover:text-primary px-3 sm:px-4">
-                <Link href="/login" className="gap-2">
-                  <LogIn className="w-4 h-4" /> <span className="hidden xs:inline">Login</span>
-                </Link>
-              </Button>
-              <Button asChild className="rounded-full px-4 sm:px-6 font-bold shadow-lg shadow-primary/20">
-                <Link href="/signup" className="gap-2">
-                  <UserPlus className="w-4 h-4" /> <span className="hidden xs:inline">Sign Up</span>
-                </Link>
-              </Button>
-            </>
-          )}
+          <Button asChild className="rounded-full px-6 font-bold shadow-lg shadow-primary/20">
+            <Link href="/services" className="gap-2">
+              <ShoppingBag className="w-4 h-4" /> Order Now
+            </Link>
+          </Button>
         </div>
       </div>
     </nav>

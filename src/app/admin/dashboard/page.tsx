@@ -3,12 +3,9 @@
 
 import { useAdminData } from "@/lib/admin-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ImageIcon, Briefcase, Phone, Settings as SettingsIcon, MousePointer2, CheckCircle, Clock, Users } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { ImageIcon, Briefcase, Settings as SettingsIcon, CheckCircle, ShoppingBag, MessageSquare } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
@@ -33,8 +30,8 @@ export default function DashboardPage() {
   const statsCards = [
     { title: "Portfolio Items", value: data.portfolio.length, icon: ImageIcon, color: "text-blue-500", bg: "bg-blue-50" },
     { title: "Active Services", value: data.services.length, icon: Briefcase, color: "text-green-500", bg: "bg-green-50" },
-    { title: "Customer Reviews", value: data.testimonials.length, icon: Users, color: "text-purple-500", bg: "bg-purple-50" },
-    { title: "Total Packages", value: data.packages.length + data.hostingPackages.length, icon: MousePointer2, color: "text-orange-500", bg: "bg-orange-50" },
+    { title: "Pricing Plans", value: data.packages.length + data.hostingPackages.length, icon: ShoppingBag, color: "text-orange-500", bg: "bg-orange-50" },
+    { title: "Total Products", value: data.products.length, icon: MessageSquare, color: "text-purple-500", bg: "bg-purple-50" },
   ];
 
   return (
@@ -63,7 +60,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Live Counters Management */}
         <Card className="border-border/60">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -99,7 +95,6 @@ export default function DashboardPage() {
                 />
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground italic">Changes are saved automatically when you click outside the box.</p>
           </CardContent>
         </Card>
 

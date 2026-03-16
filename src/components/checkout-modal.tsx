@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useFirestore, useUser } from "@/firebase";
+import { useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { PricingPackage, HostingPackage } from "@/lib/admin-store";
 import { ShieldCheck, CreditCard, Send, Zap } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -22,8 +21,6 @@ interface CheckoutModalProps {
 
 export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
   const db = useFirestore();
-  const { user } = useUser();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"bKash" | "Nagad">("bKash");
 
@@ -44,25 +41,16 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
       trxId: formData.get("trxId")?.toString().toUpperCase(),
       status: "pending",
       createdAt: serverTimestamp(),
-      userId: user ? user.uid : "guest_" + Date.now()
+      userId: "guest_" + Date.now()
     };
 
     try {
       await addDoc(collection(db, "orders"), payload);
       toast({
         title: "Order Submitted Successfully!",
-        description: "Your order is pending verification. Tracking details are available in your dashboard.",
+        description: "Your order is pending verification. We will contact you on WhatsApp soon.",
       });
       onClose();
-      if (user) {
-        router.push("/dashboard");
-      } else {
-        router.push("/signup");
-        toast({
-          title: "Account Recommendation",
-          description: "Sign up to track your order and receive live updates.",
-        });
-      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -92,7 +80,7 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
           <div className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="fullName" className="font-black text-xs uppercase tracking-widest text-slate-500">Step 1: Contact Details</Label>
-              <Input id="fullName" name="fullName" defaultValue={user?.displayName || ""} placeholder="Your Full Name" required className="rounded-2xl h-14 border-2 focus:ring-primary" />
+              <Input id="fullName" name="fullName" placeholder="Your Full Name" required className="rounded-2xl h-14 border-2 focus:ring-primary" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input name="phoneNumber" placeholder="Phone Number" required className="rounded-2xl h-14 border-2 focus:ring-primary" />
                 <Input name="whatsAppNumber" placeholder="WhatsApp Number" required className="rounded-2xl h-14 border-2 focus:ring-primary" />

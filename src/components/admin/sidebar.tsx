@@ -7,7 +7,6 @@ import {
   LayoutDashboard, 
   ImageIcon, 
   Briefcase, 
-  Users, 
   Phone, 
   Settings, 
   LogOut,
@@ -24,14 +23,13 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { name: "Orders", icon: ShoppingBag, href: "/admin/orders" },
-  { name: "Users List", icon: Users, href: "/admin/users" },
   { name: "Messages", icon: MessageSquareText, href: "/admin/messages" },
   { name: "Products", icon: Package, href: "/admin/products" },
   { name: "Portfolio", icon: ImageIcon, href: "/admin/portfolio" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
   { name: "Pricing & Hosting", icon: CreditCard, href: "/admin/pricing" },
   { name: "Reviews", icon: Star, href: "/admin/reviews" },
-  { name: "About Us", icon: Users, href: "/admin/about" },
+  { name: "About Us", icon: Star, href: "/admin/about" },
   { name: "Contact", icon: Phone, href: "/admin/contact" },
   { name: "Settings", icon: Settings, href: "/admin/settings" },
 ];
