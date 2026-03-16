@@ -11,7 +11,7 @@ import { useFirestore, useUser } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { PricingPackage, HostingPackage } from "@/lib/admin-store";
-import { ShieldCheck, CreditCard } from "lucide-react";
+import { ShieldCheck, CreditCard, Send, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface CheckoutModalProps {
@@ -41,27 +41,33 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
       packageName: pkg.name,
       packagePrice: pkg.price,
       paymentMethod,
-      trxId: formData.get("trxId"),
+      trxId: formData.get("trxId")?.toString().toUpperCase(),
       status: "pending",
       createdAt: serverTimestamp(),
-      userId: user ? user.uid : "guest" // Associate with logged-in user if available
+      userId: user ? user.uid : "guest_" + Date.now()
     };
 
     try {
       await addDoc(collection(db, "orders"), payload);
       toast({
-        title: "Order Placed Successfully!",
-        description: "We will verify your transaction shortly.",
+        title: "Order Submitted Successfully!",
+        description: "Your order is pending verification. Tracking details are available in your dashboard.",
       });
       onClose();
       if (user) {
         router.push("/dashboard");
+      } else {
+        router.push("/signup");
+        toast({
+          title: "Account Recommendation",
+          description: "Sign up to track your order and receive live updates.",
+        });
       }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Order Failed",
-        description: "Something went wrong. Please try again.",
+        description: "An error occurred while processing your order. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -70,69 +76,66 @@ export function CheckoutModal({ isOpen, onClose, pkg }: CheckoutModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-        <div className="green-gradient p-10 text-white relative">
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-[3rem] border-none shadow-2xl">
+        <div className="green-gradient p-12 text-white relative">
+          <div className="absolute top-4 right-8 opacity-20"><Zap className="w-16 h-16" /></div>
           <DialogHeader>
-            <DialogTitle className="text-3xl font-black uppercase tracking-tighter">Secure Checkout</DialogTitle>
-            <DialogDescription className="text-white/90 text-lg">
-              Ordering <span className="font-black text-white">{pkg.name}</span> for ৳{pkg.price}
+            <DialogTitle className="text-4xl font-black uppercase tracking-tighter">Secure Checkout</DialogTitle>
+            <DialogDescription className="text-white/90 text-lg font-medium mt-2">
+              Package: <span className="font-black text-white">{pkg.name}</span> <br />
+              Total Amount: <span className="font-black text-white">৳{pkg.price}</span>
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="fullName" className="font-bold">Full Name</Label>
-              <Input id="fullName" name="fullName" defaultValue={user?.displayName || ""} placeholder="Ripon Kha" required className="rounded-xl h-12" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber" className="font-bold">Contact Number</Label>
-                <Input id="phoneNumber" name="phoneNumber" placeholder="018XXXXXXXX" required className="rounded-xl h-12" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="whatsAppNumber" className="font-bold">WhatsApp Number</Label>
-                <Input id="whatsAppNumber" name="whatsAppNumber" placeholder="01XXXXXXXXX" required className="rounded-xl h-12" />
+        <form onSubmit={handleSubmit} className="p-10 space-y-8 max-h-[75vh] overflow-y-auto">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label htmlFor="fullName" className="font-black text-xs uppercase tracking-widest text-slate-500">Step 1: Contact Details</Label>
+              <Input id="fullName" name="fullName" defaultValue={user?.displayName || ""} placeholder="Your Full Name" required className="rounded-2xl h-14 border-2 focus:ring-primary" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input name="phoneNumber" placeholder="Phone Number" required className="rounded-2xl h-14 border-2 focus:ring-primary" />
+                <Input name="whatsAppNumber" placeholder="WhatsApp Number" required className="rounded-2xl h-14 border-2 focus:ring-primary" />
               </div>
             </div>
 
-            <div className="space-y-3 pt-4 border-t border-border/50">
-              <Label className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-primary">
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <Label className="text-xs font-black flex items-center gap-2 uppercase tracking-[0.2em] text-primary">
                 <CreditCard className="w-5 h-5" />
-                Step 1: Select Payment Method
+                Step 2: Payment Method
               </Label>
               <RadioGroup value={paymentMethod} onValueChange={(v: any) => setPaymentMethod(v)} className="flex gap-4">
-                <div className={`flex items-center space-x-2 px-4 py-3 rounded-2xl border-2 transition-all cursor-pointer flex-1 ${paymentMethod === 'bKash' ? 'border-pink-500 bg-pink-50 shadow-md' : 'border-border bg-white'}`}>
+                <div className={`flex items-center space-x-3 px-6 py-4 rounded-2xl border-2 transition-all cursor-pointer flex-1 ${paymentMethod === 'bKash' ? 'border-pink-500 bg-pink-50 shadow-lg' : 'border-slate-100 bg-white'}`}>
                   <RadioGroupItem value="bKash" id="bKash" className="text-pink-600" />
                   <Label htmlFor="bKash" className="cursor-pointer font-black text-pink-600">bKash</Label>
                 </div>
-                <div className={`flex items-center space-x-2 px-4 py-3 rounded-2xl border-2 transition-all cursor-pointer flex-1 ${paymentMethod === 'Nagad' ? 'border-orange-500 bg-orange-50 shadow-md' : 'border-border bg-white'}`}>
+                <div className={`flex items-center space-x-3 px-6 py-4 rounded-2xl border-2 transition-all cursor-pointer flex-1 ${paymentMethod === 'Nagad' ? 'border-orange-500 bg-orange-50 shadow-lg' : 'border-slate-100 bg-white'}`}>
                   <RadioGroupItem value="Nagad" id="Nagad" className="text-orange-600" />
                   <Label htmlFor="Nagad" className="cursor-pointer font-black text-orange-600">Nagad</Label>
                 </div>
               </RadioGroup>
             </div>
 
-            <div className="bg-primary/5 p-5 rounded-2xl space-y-3 border border-primary/20">
-              <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">Step 2: Payment Instructions</p>
-              <div className="space-y-1">
-                 <p className="text-sm font-bold">Please Send Money <span className="text-primary">৳{pkg.price}</span> to:</p>
-                 <p className="text-2xl font-black font-mono tracking-tighter">01837679963</p>
+            <div className="bg-primary/5 p-8 rounded-3xl space-y-4 border border-primary/10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5"><Send className="w-12 h-12" /></div>
+              <p className="text-[10px] text-primary font-black uppercase tracking-[0.3em]">Step 3: Pay Now</p>
+              <div className="space-y-2">
+                 <p className="text-sm font-bold text-slate-700">Send <span className="text-primary font-black">৳{pkg.price}</span> via {paymentMethod} "Send Money" to:</p>
+                 <p className="text-3xl font-black font-mono tracking-tighter text-slate-900">01837679963</p>
               </div>
-              <p className="text-[11px] text-muted-foreground italic">Use {paymentMethod} "Send Money" option only.</p>
+              <p className="text-[11px] text-muted-foreground italic font-medium">Please double check the number before sending.</p>
             </div>
 
-            <div className="space-y-2 pt-2">
-              <Label htmlFor="trxId" className="font-black text-xs uppercase tracking-widest">Step 3: Enter Transaction ID (TrxID)</Label>
-              <Input id="trxId" name="trxId" placeholder="AX72K93P..." required className="rounded-xl h-14 font-mono font-bold text-lg uppercase tracking-widest border-2 focus:border-primary" />
+            <div className="space-y-3">
+              <Label htmlFor="trxId" className="font-black text-xs uppercase tracking-[0.2em] text-slate-500">Step 4: Transaction ID (TrxID)</Label>
+              <Input id="trxId" name="trxId" placeholder="ENTER TrxID HERE" required className="rounded-2xl h-16 font-mono font-black text-2xl uppercase tracking-[0.2em] border-2 border-primary focus:ring-primary text-center" />
             </div>
           </div>
 
-          <DialogFooter className="pt-4 sticky bottom-0 bg-white">
-            <Button type="submit" disabled={isLoading} className="w-full h-14 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 gap-3 uppercase tracking-tighter">
-              {isLoading ? "Processing Order..." : "Confirm My Order"}
-              {!isLoading && <ShieldCheck className="w-5 h-5" />}
+          <DialogFooter className="pt-6 sticky bottom-0 bg-white/95 backdrop-blur-md pb-2">
+            <Button type="submit" disabled={isLoading} className="w-full h-16 rounded-2xl font-black text-xl shadow-[0_20px_40px_-15px_rgba(0,200,83,0.3)] gap-4 uppercase tracking-tighter hover:scale-[1.02] transition-all">
+              {isLoading ? "PROCESING ORDER..." : "CONFIRM MY ORDER"}
+              {!isLoading && <ShieldCheck className="w-6 h-6" />}
             </Button>
           </DialogFooter>
         </form>
